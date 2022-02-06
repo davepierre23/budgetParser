@@ -7,17 +7,24 @@ from datetime import datetime
 import logging as log
 logging.basicConfig(format='%(message)s', level=logging.DEBUG)
 
-fileName = 'pcbanking2.csv'
-fileName2 = 'pcbanking2.xlsx'
-wb = Workbook()
-ws = wb.active
-with open(fileName, 'r') as f:
-    for row in csv.reader(f):
-        ws.append(row)
-wb.save(fileName2)
-wb = load_workbook(fileName2,"rb")
-ws = wb.active
 
+def main(fileName="pcbanking2.csv"):
+    
+    fileName2 = fileName
+    if ".csv"  in fileName2:
+        fileName2=fileName2.replace(".csv", ".xlsx")
+
+
+    wb = Workbook()
+    ws = wb.active
+    with open(fileName, 'r') as f:
+        for row in csv.reader(f):
+            ws.append(row)
+    wb.save(fileName2)
+    wb = load_workbook(fileName2,"rb")
+    ws = wb.active
+    return ws , fileName2
+ws, fileName2 = main()
 def findMaxRows(ws):
     maxRow = 1
     while (True):
