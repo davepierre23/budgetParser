@@ -8,7 +8,7 @@ import logging as log
 logging.basicConfig(format='%(message)s', level=logging.DEBUG)
 
 
-def main(fileName="pcbanking2.csv"):
+def convertFile(fileName="pcbanking2.csv"):
     
     fileName2 = fileName
     if ".csv"  in fileName2:
@@ -24,7 +24,7 @@ def main(fileName="pcbanking2.csv"):
     wb = load_workbook(fileName2,"rb")
     ws = wb.active
     return ws , fileName2
-ws, fileName2 = main()
+
 def findMaxRows(ws):
     maxRow = 1
     while (True):
@@ -56,7 +56,7 @@ def printEveryLine(ws):
             log.info(ws[char +str(row)].value)
         log.info("")
 
-def checkForInvalidCols(ws):
+def checkForInvalidCols(ws,fileName):
     row =1
     for col in range (1,findColRows(ws)):
         char = get_column_letter(col)
@@ -65,7 +65,7 @@ def checkForInvalidCols(ws):
         if(value == '-'):
             log.debug("Invalid col ")
         
-            wb = load_workbook(fileName2)
+            wb = load_workbook(fileName)
             ws = wb.active
             ws.delete_cols(col)
     return (ws)
@@ -119,6 +119,11 @@ def createRow(row,ws) :
     "bankAction":bankAction,
     }
     log.debug(row)
-ws=checkForInvalidCols(ws)
-populateData(ws)
-#wb.save(fileName2)
+
+
+def main():
+    ws, fileName = convertFile()
+    ws=checkForInvalidCols(ws,fileName)
+    populateData(ws)
+if __name__ == "__main__":
+    main()
