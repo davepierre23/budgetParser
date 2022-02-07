@@ -52,7 +52,7 @@ def findColRows(ws,offSetRow):
         value = ws[char +str(offSetRow)].value
         log.debug(value)
         if(None == value):
-            maxCol-=1
+
             log.debug(maxCol)
             return maxCol
         maxCol+=1
@@ -65,15 +65,24 @@ def printEveryLine(ws):
             value= ws[char +str(row)].value
             log.info(f"value  {value} at {char +str(row)}")
         log.info("")
-  
+
+def populateData(ws):
+    offSetRow, maxRow=findOffsetAndEnd(ws)
+    for row in  range (offSetRow,maxRow):
+        createRow(row,ws)
+        log.info("")
+
+
+
 
 def createRow(row,ws) :
+ 
     transactonDateCol = 1
     transactonDescriptCol = 3
-    amountCol = 2
+    amountCol = 4
 
-    DEPOSIT = "D"
-    WITHDRAW = "W"
+    PAYEMENT = "P"
+    SPEND = "S"
     transactonDateCol = get_column_letter(transactonDateCol)
     transactonDescriptCol = get_column_letter(transactonDescriptCol)
     amountCol = get_column_letter(amountCol)
@@ -86,8 +95,8 @@ def createRow(row,ws) :
 
     amount= ws[amountCol +str(row)].value
   
-    bankAction = WITHDRAW if "-"  in amount else DEPOSIT
-
+    bankAction = PAYEMENT if "-"  in amount else SPEND
+    amount= amount.replace("$", "")
     amount= float(amount.replace("-", ""))
   
     
@@ -97,7 +106,7 @@ def createRow(row,ws) :
     "amount":amount,
     "bankAction":bankAction,
     }
-    log.debug(row)
+    log.info(row)
 
 
 
@@ -105,7 +114,6 @@ def createRow(row,ws) :
 
 def main():
     ws, fileName = convertFile("Summary.xls")
-    ws=printEveryLine(ws)
-    #populateData(ws)
+    populateData(ws)
 if __name__ == "__main__":
     main()
