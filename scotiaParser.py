@@ -94,12 +94,11 @@ def printEveryLine(ws):
         log.info("")
 
 def populateData(ws):
+    data=[]
     for row in  range (1,findMaxRows(ws)):
-        createRow(row,ws)
-        log.info("")
-def deleteCol(ws,col):
-    ws.delete_cols(col)
-  
+        data.append(createRow(row,ws))
+        log.info("")  
+    return data
 
 def createRow(row,ws) :
     transactonDateCol = 1

@@ -69,10 +69,12 @@ def printEveryLine(ws):
 
 def populateData(ws):
     offSetRow, maxRow=findOffsetAndEnd(ws)
+    data=[]
     for row in  range (offSetRow,maxRow):
+        data.append(createRow(row,ws))
         createRow(row,ws)
         log.info("")
-
+    return data
 
 
 
@@ -108,6 +110,8 @@ def createRow(row,ws) :
     "bankAction":bankAction,
     }
     log.info(row)
+
+    return row
 
 
 
