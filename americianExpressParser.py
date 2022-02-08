@@ -1,15 +1,16 @@
+import sys
 from openpyxl import Workbook, load_workbook
 from openpyxl.utils import get_column_letter
 import logging
 import csv
 from datetime import datetime
 import pyexcel as p
-
-
+import sys
+import os  
 import logging as log
 logging.basicConfig(format='%(message)s', level=logging.INFO)
 
-def convertFile(fileName="pcbanking2.csv"):
+def convertFile(fileName="americainExpressStatments/Summary.xls"):
     fileName2 = fileName
     if ".xls"  in fileName2:
         fileName2=fileName2.replace(".xls", ".xlsx")
@@ -112,8 +113,13 @@ def createRow(row,ws) :
 
 
 
-def main():
-    ws, fileName = convertFile("Summary.xls")
+def main(name=""):
+    n = len(sys.argv)
+    if(n>1):
+        ws, fileName = convertFile(sys.argv[1])
+    else:
+        ws, fileName = convertFile(name)
     populateData(ws)
+    os.remove(fileName)
 if __name__ == "__main__":
-    main()
+    main("americainExpressStatments/Summary.xls")

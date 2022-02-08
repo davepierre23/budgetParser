@@ -4,13 +4,15 @@ import logging
 import csv
 from datetime import datetime
 import pyexcel as p
+import sys
+import os
 
 
 import logging as log
 logging.basicConfig(format='%(message)s', level=logging.DEBUG)
 
 
-def convertFile(fileName="pcbanking2.csv"):
+def convertFile(fileName="scotiaBankStatments/pcbanking.csv"):
     
     fileName2 = fileName
     if ".csv"  in fileName2:
@@ -134,9 +136,16 @@ def createRow(row,ws) :
 
 
 
-def main():
-    ws, fileName = convertFile()
+def main(name=""):
+    
+    n = len(sys.argv)
+    if(n>1):
+        ws, fileName = convertFile(sys.argv[1])
+    else:
+        ws, fileName = convertFile(name)
+        
     ws=checkForInvalidCols(ws,fileName)
     populateData(ws)
+    os.remove(fileName)
 if __name__ == "__main__":
-    main()
+    main("scotiaBankStatments/pcbanking.csv")
