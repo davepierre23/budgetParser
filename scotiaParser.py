@@ -40,6 +40,9 @@ def convertFile2(fileName="pcbanking2.csv"):
     ws = wb.active
     return ws , fileName2
 
+def canParse(full_path):
+    return  ".csv"  in full_path
+
 def findMaxRows(ws):
     maxRow = 1
     while (True):

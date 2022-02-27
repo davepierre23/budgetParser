@@ -112,7 +112,9 @@ def createRow(row,ws) :
     log.info(row)
 
     return row
-
+# xls is americianEpress
+def canParse(full_path):
+    return ".xls"  in full_path
 
 
 

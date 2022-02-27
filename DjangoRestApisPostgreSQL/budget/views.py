@@ -72,12 +72,15 @@ def tutorial_list_published(request):
 
 
 @csrf_exempt
-def Save_File(request):
-  
+def save_file(request):
     file = request.FILES['uploadedFile']
     file_name =default_storage.save(file.name,file)
-    scotiaParser.main()
+    print(file_name)
+
+    #  Reading file from storage
+    file = default_storage.open(file_name)
+    file_url = default_storage.url(file_name)
+    print(os.getcwd() + file_url)
+    scotiaParser.main(os.getcwd() +file_url)
 
     return JsonResponse(file_name, safe=False)
-
- 

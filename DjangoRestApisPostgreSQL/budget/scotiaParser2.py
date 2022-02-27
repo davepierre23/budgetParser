@@ -27,6 +27,7 @@ def convertFile(fileName="scotiaBankStatments/pcbanking.csv"):
     wb = load_workbook(fileName2,"rb")
     ws = wb.active
     return ws , fileName2
+
 def convertFile2(fileName="pcbanking2.csv"):
     fileName2 = fileName
     if ".xls"  in fileName2:
@@ -143,5 +144,6 @@ def main(name=""):
     ows = populateData(ws)
     os.remove(fileName)
     return ows
+
 if __name__ == "__main__":
     main("scotiaBankStatments/pcbanking.csv")

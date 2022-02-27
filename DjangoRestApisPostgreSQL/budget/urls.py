@@ -6,5 +6,5 @@ urlpatterns = [
     path('api/tutorials', views.tutorial_list),
     path('api/tutorials', views.tutorial_detail),
     path('api/tutorials', views.tutorial_list_published),
-    path('SaveFile', views.Save_File)
+    path('saveFile', views.save_file)
 ] + static(settings.MEDIA_URL, document_root = settings.MEDIA_ROOT)
