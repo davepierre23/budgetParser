@@ -14,4 +14,5 @@ pipenv shell
 
 
 Run django 
+cd 
 python manage.py runserver

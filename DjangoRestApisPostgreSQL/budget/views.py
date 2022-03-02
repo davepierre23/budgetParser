@@ -2,7 +2,7 @@ from django.shortcuts import render
 from django.http.response import JsonResponse
 from rest_framework.parsers import JSONParser 
 from rest_framework import status
-from . import  scotiaParser 
+from .parsers import  parser
 import os
 from budget.models import Transaction
 from budget.serializers import TransactionSerializer
@@ -11,7 +11,7 @@ from django.views.decorators.csrf import csrf_exempt
 from rest_framework.parsers import JSONParser
 from django.core.files.storage import default_storage
 from django.core.files import File
-
+from .models  import Transaction
 @api_view(['GET', 'POST', 'DELETE'])
 @csrf_exempt
 def tutorial_list(request):
@@ -30,7 +30,7 @@ def tutorial_list(request):
         
         SCOTIA_BANK_PATH = os.getcwd()+"/scotiaBankStatments"
         statement_dir_lists.append(SCOTIA_BANK_PATH)
-        parsers.append(scotiaParser)
+        parsers.append(scotiaParser2)
         def automateParse(full_path, parser):
             statement_dir_list = os.listdir(full_path)
             for  path  in (statement_dir_list):
@@ -81,6 +81,16 @@ def save_file(request):
     file = default_storage.open(file_name)
     file_url = default_storage.url(file_name)
     print(os.getcwd() + file_url)
-    scotiaParser.main(os.getcwd() +file_url)
+    data =parser.parse(os.getcwd() +file_url)
+    
+    for model in data :
+        populateTransaction(model)
 
-    return JsonResponse(file_name, safe=False)
+
+    return JsonResponse({
+        'result':'sucess'
+    })
+
+def populateTransaction(data):
+    model =Transaction(BankAction=data["bankAction"],TransactonDate = data["transactonDate"],Amount=data["amount"],TransactonDescript=data["transactonDescript"])
+    model.save()

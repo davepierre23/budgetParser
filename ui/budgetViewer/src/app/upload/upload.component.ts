@@ -11,7 +11,7 @@ import {UploadService} from '../shared/services/upload.service'
 export class UploadComponent {
   fileToUpload: File | null = null;
      // Variable to store shortLink from api response
-    shortLink: string = "";
+    sucessOrFail: string = "";
     loading: boolean = false; // Flag variable
     constructor(private uploadService: UploadService) {}
 
@@ -21,21 +21,28 @@ export class UploadComponent {
       console.log( this.fileToUpload )
 
   }
-
+  createResponseMessage(result: String, fileName:String){
+    if(result == "sucess"){
+      this.sucessOrFail =  fileName +" has successfully been delivered"
+    }else{
+      this.sucessOrFail =  fileName +" has  failed"
+    }
+  }
 
   // OnClick of button Upload
   onUpload() {
     this.loading = !this.loading;
+    console.log("")
     this.uploadService.upload(this.fileToUpload!).subscribe(
-        (event: any) => {
-            if (typeof (event) === 'object') {
-
-                // Short link via api response
-                this.shortLink = event.link;
-
-                this.loading = false; // Flag variable 
-            }
+        (data) => {
+          this.createResponseMessage(data.result,this.fileToUpload!.name)
+          
+         
+         this.loading = false; // Flag variable 
+            
         }
     );
 }
+
+
 }

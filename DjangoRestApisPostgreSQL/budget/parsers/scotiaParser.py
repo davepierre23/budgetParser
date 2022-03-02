@@ -1,8 +1,9 @@
+from fileinput import filename
 from openpyxl import Workbook, load_workbook
 from openpyxl.utils import get_column_letter
 import logging
 import csv
-from datetime import datetime
+import datetime
 import sys
 import os
 
@@ -27,7 +28,6 @@ def convertFile(fileName="scotiaBankStatments/pcbanking.csv"):
     wb = load_workbook(fileName2,"rb")
     ws = wb.active
     return ws , fileName2
-
 def convertFile2(fileName="pcbanking2.csv"):
     fileName2 = fileName
     if ".xls"  in fileName2:
@@ -39,6 +39,9 @@ def convertFile2(fileName="pcbanking2.csv"):
     wb = load_workbook(fileName2,"rb")
     ws = wb.active
     return ws , fileName2
+
+def canParse(full_path):
+    return  ".csv"  in full_path
 
 def findMaxRows(ws):
     maxRow = 1
@@ -100,6 +103,11 @@ def populateData(ws):
         log.info("")  
     return data
 
+#must be '%Y-%m-%d' to save in datbase
+#https://www.tutorialspoint.com/python/time_strptime.htm
+def convertDate(date="1/4/2022"):
+    return datetime.datetime.strptime(date, '%m/%d/%Y').strftime('%Y-%m-%d')
+
 def createRow(row,ws) :
     transactonDateCol = 1
     transactonDescriptCol = 3
@@ -125,25 +133,34 @@ def createRow(row,ws) :
   
     
     row = {
-    "transactonDate":transactonDate,
+    "transactonDate": convertDate(transactonDate),
     "transactonDescript":transactonDescript,
     "amount":amount,
     "bankAction":bankAction,
     }
     log.debug(row)
+    return row
 
-
-
-
-def main(name=""):
+def parse(name=""):
     
-    n = len(sys.argv)
-
     ws, fileName = convertFile(name)
+        
     ws=checkForInvalidCols(ws,fileName)
-    ows = populateData(ws)
+    data= populateData(ws)
     os.remove(fileName)
-    return ows
+    return data
+
+
+def main(name):
+
+    n = len(sys.argv)
+    if(n>1):
+        filename = sys.argv[1]
+    else:
+        filename = name
+    parse(filename)
+
 
 if __name__ == "__main__":
-    main("scotiaBankStatments/pcbanking.csv")
+    #main("scotiaBankStatments/pcbanking.csv")
+    print(convertDate(date="1/4/2022"))

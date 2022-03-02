@@ -2,11 +2,11 @@ import sys
 from openpyxl import Workbook, load_workbook
 from openpyxl.utils import get_column_letter
 import logging
-import csv
-from datetime import datetime
 import pyexcel as p
+from datetime import datetime
 import sys
 import os  
+import datetime
 import logging as log
 logging.basicConfig(format='%(message)s', level=logging.INFO)
 
@@ -76,6 +76,9 @@ def populateData(ws):
         log.info("")
     return data
 
+#must be '%Y-%m-%d' to save in datbase
+def convertDate(date="11 Jan 2022"):
+    return datetime.datetime.strptime(date, '%d %b %Y').strftime('%Y-%m-%d')
 
 
 def createRow(row,ws) :
@@ -104,7 +107,7 @@ def createRow(row,ws) :
   
     
     row = {
-    "transactonDate":transactonDate,
+    "transactonDate":convertDate(transactonDate),
     "transactonDescript":transactonDescript,
     "amount":amount,
     "bankAction":bankAction,
@@ -117,15 +120,24 @@ def canParse(full_path):
     return ".xls"  in full_path
 
 
+def main(name):
 
-
-def main(name=""):
     n = len(sys.argv)
     if(n>1):
-        ws, fileName = convertFile(sys.argv[1])
+        fileName = sys.argv[1]
     else:
-        ws, fileName = convertFile(name)
-    populateData(ws)
+        fileName = name
+    parse(name)
+  
+
+
+def parse(name=""):
+    
+    ws, fileName = convertFile(name)
+    data= populateData(ws)
     os.remove(fileName)
+    return data
+
 if __name__ == "__main__":
-    main("americainExpressStatments/Summary.xls")
+    #main("americainExpressStatments/Summary.xls")
+    print(convertDate())
