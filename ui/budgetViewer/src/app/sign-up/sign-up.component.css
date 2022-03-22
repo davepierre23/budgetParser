@@ -1,0 +1,14 @@
+.example-card {
+    max-width: 400px;
+    width: 75%;
+    margin: 10px auto;
+  }
+  
+  .main-div,  div{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  .btn-login{
+    width: 75%;
+  }

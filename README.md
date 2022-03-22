@@ -14,5 +14,9 @@ pipenv shell
 
 
 Run django 
-cd 
+cd DjangoRestApisPostgreSQL/
 python manage.py runserver
+
+After adding changing / adding a new model, always make sure to run 
+python manage.py makemigrations budget
+and python manage.py migrate budget

@@ -1,0 +1,25 @@
+
+   
+<mat-toolbar color="primary" class="mat-elevation-z10">
+    <span>
+      <mat-icon>library_music</mat-icon>Fake Book Library
+    </span>
+ 
+  </mat-toolbar>
+
+  <mat-toolbar color="primary" class="mat-elevation-z10">
+    <div class="shift"></div>
+    Budget Organizer 
+    <span class="shift"> <span class="material-icons">
+      attach_money
+      </span>
+    </span>
+    <div class="onRight"></div>
+    <a [routerLink]="['/home']" routerLinkActive="active" mat-button>Home <mat-icon>home</mat-icon></a>
+    <a [routerLink]="['/favourites']" routerLinkActive="active" mat-button>Favourites <mat-icon>favorite</mat-icon></a>
+    <a [routerLink]="['/songs']" routerLinkActive="active" mat-button> Songs<mat-icon>music_note</mat-icon></a>
+    <a [routerLink]="['/bookcodes']" routerLinkActive="active" mat-button> Bookcodes<mat-icon>menu_book</mat-icon></a>
+    <a mat-raised-button (click)="onSignOut()">Sign Out<span class="material-icons">
+        logout
+      </span></a>
+  </mat-toolbar>

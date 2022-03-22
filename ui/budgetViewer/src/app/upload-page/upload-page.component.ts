@@ -9,7 +9,7 @@ import {UploadService} from '../shared/services/upload.service'
 export class UploadPageComponent {
 
 
-  constructor(private uploadService: UploadService) {}
+  constructor() {}
 
 
 

@@ -2,6 +2,9 @@ import { HttpClient, HttpEventType } from '@angular/common/http';
 import { Component, Input } from '@angular/core';
 import { finalize, Subscription } from 'rxjs';
 import {UploadService} from '../shared/services/upload.service'
+import { FormGroup } from '@angular/forms';
+import { FormlyFormOptions, FormlyFieldConfig } from '@ngx-formly/core';
+
 
 @Component({
   selector: 'app-upload',
@@ -13,6 +16,16 @@ export class UploadComponent {
      // Variable to store shortLink from api response
     sucessOrFail: string = "";
     loading: boolean = false; // Flag variable
+
+    form = new FormGroup({});
+    model = {};
+    options: FormlyFormOptions = {};
+    fields: FormlyFieldConfig[] = [
+      {
+        key: 'file',
+        type: 'file',
+      },
+    ];
     constructor(private uploadService: UploadService) {}
 
     handleFileInput(event: Event) {
