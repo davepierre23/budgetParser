@@ -5,12 +5,13 @@ from django.db import models
 
 
 class Transaction(models.Model):
-    Id = models.AutoField(primary_key=True)
-    TransactonDescript = models.CharField(max_length=500)
-    Amount = models.IntegerField()
-    TransactonDate =  models.DateField()
-    BankAction =models.CharField(max_length=1)
-
+    id = models.AutoField(primary_key=True)
+    transactonDescript = models.CharField(max_length=500)
+    amount = models.FloatField()
+    transactonDate =  models.DateField()
+    bankAction =models.CharField(max_length=1)
+    createdAt = models.DateTimeField(auto_now_add=True)
     def __str__(self) -> str:
         return self.TransactonDescript
-    
+
+
