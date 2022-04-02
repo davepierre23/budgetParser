@@ -22,6 +22,7 @@ import { SearchTransactionsPageComponent } from './search-transactions-page/sear
  
 import { FormlyMatDatepickerModule } from '@ngx-formly/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
+import { TransactionSearchTableComponent } from './transaction-search-table/transaction-search-table.component';
 @NgModule({
   declarations: [
     AppComponent,
@@ -33,7 +34,8 @@ import { MatNativeDateModule } from '@angular/material/core';
     SignUpComponent,
     ErrorPageComponent,
     SearchTransactionsFormComponent,
-    SearchTransactionsPageComponent
+    SearchTransactionsPageComponent,
+    TransactionSearchTableComponent
   ],
   imports: [
     BrowserModule,

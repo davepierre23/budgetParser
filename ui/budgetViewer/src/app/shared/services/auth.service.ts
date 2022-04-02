@@ -11,9 +11,7 @@ import { HttpClient } from '@angular/common/http';
 })
 export class AuthService {
   private serverUrl = 'http://localhost:8000/users';
-  dbName:string = "users"
-  userLogInData :any  = null;
-  user$?: Observable<Users | null | undefined> = of(null);
+   user$?: Observable<Users | null | undefined> = of(null);
   constructor(
     private httpClient: HttpClient,
     public router: Router,

@@ -3,8 +3,9 @@ import { UserForm, Users} from "../../../models/user"
 import { Router } from "@angular/router";
 //https://fireship.io/lessons/angularfire-google-oauth/
 import { Observable, of ,from} from 'rxjs';
-import { catchError, switchMap} from 'rxjs/operators';
+import { catchError, map, switchMap} from 'rxjs/operators';
 import { HttpClient, HttpParams } from '@angular/common/http';
+import { Transaction } from 'src/models/transactionForm';
 
 @Injectable({
   providedIn: 'root'
@@ -17,17 +18,15 @@ export class TransactionsService {
     public router: Router,
   ) {}
 
-  getAll(model: any){
+  getAll():Observable<Transaction[]> {
     
-    return this.httpClient.get(this.serverUrl).subscribe(
-      (data) => {
-        console.log(data)
-      
-      }
-  );
+    return this.httpClient.get<Transaction[]>(this.serverUrl).pipe(map(result => result.map((data)=>{
+      data = new Transaction(data)
+      return data
+    })));
  
   }
-  search(model: any){
+  search(model: any):Observable<Transaction[]> {
     var params : HttpParams = new HttpParams()
 
     let key: keyof any;
@@ -41,13 +40,11 @@ export class TransactionsService {
 
     const options =
     { params:params } ;
-    const thing =this.httpClient.get(this.serverUrl+this.detail, options).subscribe(
-      (data) => {
-        console.log(data)
-      
-      }
-  );
- 
+
+    return this.httpClient.get<Transaction[]>(this.serverUrl+this.detail, options).pipe(map(result => result.map((data)=>{
+      data = new Transaction(data)
+      return data
+    })));
   
   }
 

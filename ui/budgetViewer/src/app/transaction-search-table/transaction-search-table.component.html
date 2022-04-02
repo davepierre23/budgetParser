@@ -1,0 +1,56 @@
+<ng-template #NoResults>
+    <div>No Results</div>
+</ng-template>
+<ng-container *ngIf="(transactions$ | async) as transactions ;">
+        <ng-container *ngIf="transactions.length > 0;else NoResults">
+            <div class="mat-elevation-z8">
+                <table mat-table [dataSource]="dataSource" matSort>
+
+                    <!-- Id Column -->
+                    <ng-container matColumnDef="id">
+                        <th mat-header-cell *matHeaderCellDef mat-sort-header> Id </th>
+                        <td mat-cell *matCellDef="let row"><a [routerLink]="['/transactions', row.id]">{{row.id}} </a>
+                        </td>
+                    </ng-container>
+
+                    <!-- Amount Column -->
+                    <ng-container matColumnDef="amount">
+                        <th mat-header-cell *matHeaderCellDef mat-sort-header> Amount </th>
+                        <td mat-cell *matCellDef="let row"> {{row.amount}} </td>
+                    </ng-container>
+
+                    <!-- Bank Action Column -->
+                    <ng-container matColumnDef="bankAction">
+                        <th mat-header-cell *matHeaderCellDef mat-sort-header> Bank Action </th>
+                        <td mat-cell *matCellDef="let row"> {{row.bankAction}} </td>
+                    </ng-container>
+
+                    <!-- transactonDescript  Column -->
+                    <ng-container matColumnDef="transactonDescript">
+                        <th mat-header-cell *matHeaderCellDef mat-sort-header> Description  </th>
+                        <td mat-cell *matCellDef="let row"> {{row.transactonDescript}} </td>
+                    </ng-container>
+
+                    <!-- Inserted  Date Column -->
+                    <ng-container matColumnDef="createdAt">
+                        <th mat-header-cell *matHeaderCellDef mat-sort-header> Created Date  </th>
+                        <td mat-cell *matCellDef="let row"> {{row.createdAt}} </td>
+                    </ng-container>
+       
+
+                    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+                    <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+
+                    <!-- Row shown when there is no matching data. -->
+                    <tr class="mat-row" *matNoDataRow>
+                        <td class="mat-cell" colspan="4">No data matching the filter </td>
+                    </tr>
+                </table>
+
+                <mat-paginator #paginator [length]="dataSource!.data.length" [pageIndex]="0" [pageSize]="5"
+                    [pageSizeOptions]="[5,25, 50, 100, 250]">
+                </mat-paginator>
+            </div>
+        </ng-container>
+
+</ng-container>

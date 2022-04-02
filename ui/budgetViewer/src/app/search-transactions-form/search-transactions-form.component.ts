@@ -1,9 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder,FormGroup,Validators } from '@angular/forms';
 import { FormlyField, FormlyFieldConfig, FormlyFormOptions } from '@ngx-formly/core';
-import { UserAccount, UserForm } from '../../models/user';
+import { TransactionForm, SearchTransactionsForm } from '../../models/transactionForm';
 import { TransactionsService } from '../shared/services/transactions.service';
- 
+import * as moment from 'moment'; 
 @Component({
   selector: 'search-transactions-form',
   templateUrl: './search-transactions-form.component.html',
@@ -12,7 +12,7 @@ import { TransactionsService } from '../shared/services/transactions.service';
 export class SearchTransactionsFormComponent   {
 
   form = new FormGroup({});
-  model  = new UserAccount();
+  model  = new TransactionForm();
   options: FormlyFormOptions = {};
   fields: FormlyFieldConfig[] = [
     
@@ -25,6 +25,7 @@ export class SearchTransactionsFormComponent   {
         options: [
           { value: 'W', label: 'Withdraw'  },
           { value: 'D', label: 'Deposit'  },
+
         ],
       },
     },
@@ -45,13 +46,37 @@ export class SearchTransactionsFormComponent   {
         required: true,
       },
     },
-    
+    {
+      key: 'transDescript',
+      type: 'input',
+      templateOptions: {
+        label: 'Enter search word',
+      },
+    },
+    {
+      key: 'numberOfResults',
+      type: 'select',
+      templateOptions: {
+        label: 'Select a number of results ',
+        required: true,
+        options: [
+          { value: 10, label: '10'  },
+          { value: 20, label: '20'  },          
+          { value: 30, label: '30'  },
+          { value: 40, label: '40'  },
+          { value: 50, label: '50'  }
+
+        ],
+      },
+    },
   ];
   constructor(private transactionService:TransactionsService ) {}
 
   submit(model: any){
-    this.transactionService.search(model)
-    console.log(model)
+    let search = new TransactionForm(model)
+    console.log(search)
+    this.transactionService.search(search)
+
   }
 
 
