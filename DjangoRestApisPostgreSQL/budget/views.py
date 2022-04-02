@@ -46,11 +46,13 @@ def transaction_detail(request):
     bankAction =request.GET.get('bankAction', None)
     startDate =request.GET.get('startDate', None)
     endDate  =request.GET.get('endDate', None)
-
-    # bankAction = request.GET["bankAction"]
-    numberOfResults = None
-    transaction_description = "Payroll Deposit"
-
+    transaction_description  =request.GET.get('transDescript', '')
+    transaction_description = transaction_description.strip()
+    if(not transaction_description):
+        transaction_description = None
+    print(transaction_description)
+    numberOfResults  = int(request.GET.get('numberOfResults', 100))
+ 
     #lazy loaded so can dynamicially do it
     transactions = Transaction.objects.filter( transactonDate__range=[startDate,endDate ])
 
