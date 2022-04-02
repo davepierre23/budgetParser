@@ -78,6 +78,7 @@ export class SearchTransactionsFormComponent   {
     this.transactionService.search(search)
 
   }
+  
 
 
 
