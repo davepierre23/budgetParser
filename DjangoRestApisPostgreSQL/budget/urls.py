@@ -5,7 +5,7 @@ from django.conf import settings
 urlpatterns = [ 
     path('transactions', views.transaction_list),
     path('transactions/details', views.transaction_detail),
-    
+    # path('transactions/bankActions', views.distinct_bank_actions),
     path('users', views.login_user),
     path('saveFile', views.save_file),
     path('users', views.login_user),

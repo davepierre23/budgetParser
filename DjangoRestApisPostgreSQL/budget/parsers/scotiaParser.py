@@ -1,156 +1,90 @@
-from fileinput import filename
-from openpyxl import Workbook, load_workbook
-from openpyxl.utils import get_column_letter
 import logging
-import csv
-import datetime
 import sys
-import os
-
+import pandas as pd
 
 import logging as log
 logging.basicConfig(format='%(message)s', level=logging.DEBUG)
+DATA_DIR = "/Users/davepierre/Documents/Projects/budgetParser/data/"
+DATE='Date'
+AMOUNT='Amount'
+DESCRIPTION='Description'
+TYPE='Type'
+NOTHING='NOTHING'
+MONTHLY_FEE=' MONTHLY FEES'
 
-
-def convertFile(fileName="scotiaBankStatments/pcbanking.csv"):
-    
-    fileName2 = fileName
-    if ".csv"  in fileName2:
-        fileName2=fileName2.replace(".csv", ".xlsx")
-
-
-    wb = Workbook()
-    ws = wb.active
-    with open(fileName, 'r') as f:
-        for row in csv.reader(f):
-            ws.append(row)
-    wb.save(fileName2)
-    wb = load_workbook(fileName2,"rb")
-    ws = wb.active
-    return ws , fileName2
-def convertFile2(fileName="pcbanking2.csv"):
-    fileName2 = fileName
-    if ".xls"  in fileName2:
-        fileName2=fileName2.replace(".xls", ".xlsx")
-    p.save_book_as(file_name=fileName,
-                dest_file_name=fileName2)
-    wb = Workbook()
-    ws = wb.active
-    wb = load_workbook(fileName2,"rb")
-    ws = wb.active
-    return ws , fileName2
-
+MODEL_DATE='Date'
+MODEL_DESCRIPTION= 'Description'
+MODEL_AMOUNT= 'Amount'
+MODEL_ORIGIN= 'Origin'
 def canParse(full_path):
-    return  ".csv"  in full_path
+    return  "pcbanking"  in full_path 
 
-def findMaxRows(ws):
-    maxRow = 1
-    while (True):
-        char = get_column_letter(1)
-        value = ws[char +str(maxRow)].value
-        log.debug(value)
-        if(None == value):
-            maxRow-=1
-            log.debug(maxRow)
-            return maxRow
-        maxRow+=1
+def parse(name):
+    df = pd.read_csv(name)
+    if(df.shape[1]==3):
+        df.columns = [DATE,DESCRIPTION, AMOUNT]
+    elif(df.shape[1]==5):
+        df.columns = [DATE, AMOUNT,NOTHING,TYPE, DESCRIPTION]
+        # drop the 'Nothing' column
+        df = df.drop(NOTHING, axis=1)
 
-def findColRows(ws):
-    maxCol = 1
-    while (True):
-        char = get_column_letter(maxCol)
-        value = ws[char +str(1)].value
-        log.debug(value)
-        if(None == value):
-            maxCol-=1
-            log.debug(maxCol)
-            return maxCol
-        maxCol+=1
+    df[DATE] = pd.to_datetime(df[DATE])
+    df = df[df[AMOUNT] < 0]
+    return convertToModels(df)
 
-def printEveryLine(ws):
-    for row in  range (1,findMaxRows(ws)):
-        for col in range (1,findColRows(ws)):
-            char = get_column_letter(col)
-            log.info(ws[char +str(row)].value)
-        log.info("")
 
-def checkForInvalidCols(ws,fileName):
-    row =1
-    for col in range (1,findColRows(ws)):
-        char = get_column_letter(col)
-        gridValue=char +str(row)
-        value = ws[gridValue].value
-        if(value == '-'):
-            log.debug("Invalid col ")
-        
-            wb = load_workbook(fileName)
-            ws = wb.active
-            ws.delete_cols(col)
-    return (ws)
+def parseByMonth(name=""):
+    df = parse(name)
 
-def printEveryLine(ws):
-  
-    for row in  range (1,findMaxRows(ws)):
-        for col in range (1,findColRows(ws)):
-            char = get_column_letter(col)
-            log.info(ws[char +str(row)].value)
-        log.info("")
+    expense_by_month_year = df.groupby([df[DATE].dt.year, df[DATE].dt.month])[AMOUNT].sum()
 
-def populateData(ws):
-    data=[]
-    for row in  range (1,findMaxRows(ws)):
-        data.append(createRow(row,ws))
-        log.info("")  
-    return data
+    # print the aggregated income by month and year
+    log.info(expense_by_month_year)
 
-#must be '%Y-%m-%d' to save in datbase
-#https://www.tutorialspoint.com/python/time_strptime.htm
-def convertDate(date="1/4/2022"):
-    return datetime.datetime.strptime(date, '%m/%d/%Y').strftime('%Y-%m-%d')
+def parseMonthlyFeeByMonth(name=""):
+    df = parse(name)
+    # get rows where DESCRIPTION is "Monthly Fee"
+    monthly_fees = df[df[MODEL_DESCRIPTION] == 'MONTHLY FEES']
+    log.debug(monthly_fees)
 
-def createRow(row,ws) :
-    transactonDateCol = 1
-    transactonDescriptCol = 3
-    amountCol = 2
+    # print the resulting DataFrame
+    monthly_fees = monthly_fees.groupby([monthly_fees[DATE].dt.year, monthly_fees[DATE].dt.month])[AMOUNT].sum()
 
-    DEPOSIT = "D"
-    WITHDRAW = "W"
-    transactonDateCol = get_column_letter(transactonDateCol)
-    transactonDescriptCol = get_column_letter(transactonDescriptCol)
-    amountCol = get_column_letter(amountCol)
-        
+    # print the aggregated income by month and year
+    log.debug(monthly_fees)
 
-    log.info("")
+def parseMonthlyFeeByYear(name=""):
+    df = parse(name)
+    # get rows where DESCRIPTION is "Monthly Fee"
+    monthly_fees = df[df[MODEL_DESCRIPTION] == 'MONTHLY FEES']
+    log.debug(monthly_fees)
+
+    # print the resulting DataFrame
+    monthly_fees = monthly_fees.groupby([monthly_fees[DATE].dt.year])[AMOUNT].sum()
+
+    # print the aggregated income by month and year
+    log.debug(monthly_fees)
+
+def parseByYear(name=""):
+    
+    df = parse(df)
+
+   # group the data by month and year, and sum the income
+    expense_by_year = df.groupby([df[DATE].dt.year])[AMOUNT].sum()
+
+    # print the aggregated income by month and year
+    log.debug(expense_by_year)
+
+def convertToModels(df):
  
-    transactonDate = ws[ transactonDateCol +str(row)].value
-    transactonDescript = ws[transactonDescriptCol +str(row)].value
+    new_df = df.loc[:, [DATE,DESCRIPTION, AMOUNT]]
 
-    amount= ws[amountCol +str(row)].value
-  
-    bankAction = WITHDRAW if "-"  in amount else DEPOSIT
-
-    amount= float(amount.replace("-", ""))
-  
-    
-    row = {
-    "transactonDate": convertDate(transactonDate),
-    "transactonDescript":transactonDescript,
-    "amount":amount,
-    "bankAction":bankAction,
-    }
-    log.debug(row)
-    return row
-
-def parse(name=""):
-    
-    ws, fileName = convertFile(name)
-        
-    ws=checkForInvalidCols(ws,fileName)
-    data= populateData(ws)
-    os.remove(fileName)
-    return data
-
-
+    #basic model 
+    #Date  #Description #Amount
+    new_df.columns = [MODEL_DATE,MODEL_DESCRIPTION, MODEL_AMOUNT]
+    new_df[MODEL_ORIGIN] = 'SCOTIA'
+    log.info(new_df)
+    return new_df
 def main(name):
 
     n = len(sys.argv)
@@ -158,9 +92,9 @@ def main(name):
         filename = sys.argv[1]
     else:
         filename = name
-    parse(filename)
+    parseMonthlyFeeByYear(filename)
 
 
 if __name__ == "__main__":
-    #main("scotiaBankStatments/pcbanking.csv")
-    print(convertDate(date="1/4/2022"))
+    main(DATA_DIR+"/pcbanking (1).csv")
+    

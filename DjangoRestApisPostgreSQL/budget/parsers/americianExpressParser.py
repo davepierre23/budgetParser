@@ -7,9 +7,21 @@ from datetime import datetime
 import sys
 import os  
 import datetime
+import pandas as pd
+
 import logging as log
 logging.basicConfig(format='%(message)s', level=logging.INFO)
 
+DATA_DIR = "/Users/davepierre/Documents/Projects/budgetParser/data"
+DATE='Date'
+AMOUNT='Amount'
+DESCRIPTION = 'Description'
+
+MODEL_DATE='Date'
+MODEL_DESCRIPTION= 'Description'
+MODEL_AMOUNT= 'Amount'
+MODEL_ORIGIN= 'Origin'
+MODEL_CATEGORY= 'Category'
 def convertFile(fileName="americainExpressStatments/Summary.xls"):
     fileName2 = fileName
     if ".xls"  in fileName2:
@@ -43,6 +55,21 @@ def findOffsetAndEnd(ws):
             return offSetRow, maxRow
         
         row +=1
+def findDescription(ws,row):
+    offSetValue="Description"
+    col=1       
+    while (True):
+        char = get_column_letter(col)
+        value = ws[char +str(row-1)].value
+        log.debug(f"value  {value} at {char +str(row)}")
+       
+        if(offSetValue == value):
+            offSetRow=row+1
+            log.debug(f"Description {col}")
+            return col
+           
+     
+        col +=1
 
  
 
@@ -70,55 +97,94 @@ def printEveryLine(ws):
 def populateData(ws):
     offSetRow, maxRow=findOffsetAndEnd(ws)
     data=[]
+    transactonDescriptCol= findDescription(ws,offSetRow)
     for row in  range (offSetRow,maxRow):
-        data.append(createRow(row,ws))
-        createRow(row,ws)
-        log.info("")
-    return data
+        data.append(createRow(row,ws,transactonDescriptCol))
+        log.debug("")
+
+    #convert to dataframe
+    df = convertToModels(pd.DataFrame.from_dict(data)) 
+    df[DATE] = pd.to_datetime(df[DATE])
+    log.debug(df)
+    df = df[df[AMOUNT] < 0]
+  
+
+    return df
 
 #must be '%Y-%m-%d' to save in datbase
 def convertDate(date="11 Jan 2022"):
     return datetime.datetime.strptime(date, '%d %b %Y').strftime('%Y-%m-%d')
 
 
-def createRow(row,ws) :
- 
-    transactonDateCol = 1
-    transactonDescriptCol = 3
-    amountCol = 4
+def createRow(row,ws,transactonDescriptCol) :
+    transactonDateCol=1
+    amountCol=4
+
 
     PAYEMENT = "P"
     SPEND = "S"
     transactonDateCol = get_column_letter(transactonDateCol)
-    transactonDescriptCol = get_column_letter(transactonDescriptCol)
+    transactonDescriptLetter = get_column_letter(transactonDescriptCol)
     amountCol = get_column_letter(amountCol)
         
 
-    log.info("")
+    log.debug("")
  
     transactonDate = ws[ transactonDateCol +str(row)].value
-    transactonDescript = ws[transactonDescriptCol +str(row)].value
+    transactonDescript = ws[transactonDescriptLetter +str(row)].value
 
     amount= ws[amountCol +str(row)].value
   
     bankAction = PAYEMENT if "-"  in amount else SPEND
+    if( "-"  in amount):
+        amount = amount.replace("-", "")
+    else:
+        amount = "-"+amount
+
     amount= amount.replace("$", "")
-    amount= float(amount.replace("-", ""))
+    amount = float(amount.replace(',', ''))
   
     
     row = {
-    "transactonDate":convertDate(transactonDate),
-    "transactonDescript":transactonDescript,
-    "amount":amount,
-    "bankAction":bankAction,
-    }
-    log.info(row)
+    "Date":convertDate(transactonDate),
+    "Description":transactonDescript,
+    "Amount":amount    }
+    log.debug(row)
 
     return row
 # xls is americianEpress
 def canParse(full_path):
-    return ".xls"  in full_path
+    return "Summary"  in full_path
 
+def parseByMonth(name=""):
+    
+    df = parse(name)
+
+    expense_by_month_year = df.groupby([df[DATE].dt.year, df[DATE].dt.month])[AMOUNT].sum()
+
+    # print the aggregated income by month and year
+    log.info(expense_by_month_year)
+
+def parseByYear(name=""):
+    
+    df = parse(name)
+
+   # group the data by month and year, and sum the income
+    expense_by_year = df.groupby([df[DATE].dt.year])[AMOUNT].sum()
+
+    # print the aggregated income by month and year
+    log.info(expense_by_year)
+
+def convertToModels(df):
+ 
+    new_df = df.loc[:, [DATE,DESCRIPTION, AMOUNT]]
+
+    #basic model 
+    #Date  #Description #Amount
+    new_df.columns = [MODEL_DATE,MODEL_DESCRIPTION, MODEL_AMOUNT]
+    new_df[MODEL_ORIGIN] = 'AmericanExpress'
+    
+    return new_df
 
 def main(name):
 
@@ -127,8 +193,12 @@ def main(name):
         fileName = sys.argv[1]
     else:
         fileName = name
-    parse(name)
+    df =parse(name)
   
+
+
+
+    
 
 
 def parse(name=""):
@@ -139,5 +209,4 @@ def parse(name=""):
     return data
 
 if __name__ == "__main__":
-    #main("americainExpressStatments/Summary.xls")
-    print(convertDate())
+     main(DATA_DIR+"/Summary.xls")

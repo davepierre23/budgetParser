@@ -40,6 +40,13 @@ def transaction_list(request):
             return JsonResponse(tutorial_serializer.data, status=status.HTTP_201_CREATED) 
         return JsonResponse(tutorial_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
  
+# @api_view(['GET'])
+# @csrf_exempt
+# def bankAction(request):
+#      if request.method == 'GET':
+#         distinct_bank_actions = Transaction.objects.all().values("bankAction").distinct()
+#         return JsonResponse(distinct_bank_actions,safe=False)
+        
 
 @api_view(['GET'])
 def transaction_detail(request):

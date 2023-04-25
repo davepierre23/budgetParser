@@ -46,7 +46,7 @@ export class TransactionSearchTableComponent implements AfterViewInit {
           this.dataSource = new MatTableDataSource(data);
           this.dataSource.sort = this.sort;
           this.dataSource.paginator = this.paginator;
-          this.totalCost = this.getTotalCost(data)
+          this.totalCost = of(this.getTotalCost(data))
           this.totalCost.subscribe(data=>{
             console.log('Total amount', this.totalCost);          console.log('Total amount', data);
           })
@@ -56,9 +56,23 @@ export class TransactionSearchTableComponent implements AfterViewInit {
       this.transactions$ = of([]);
     }
   }
-  getTotalCost(transactions: Transaction[]): Observable<number>  {
 
-    return of(transactions!.map(t => t!.amount).reduce((acc, value) => acc + value, 0));
+
+   // used to get a summary of the datasoruce
+   getTotalCost(data:Transaction[]): number {
+    let transactions = this.dataSource.data
+
+ 
+    transactions!.map(t => t!.amount).reduce((acc, value) => acc + value, 0)
+    return 2
+  }
+
+  getBankAction(){
+    this.dataService.getBankActions().subscribe(data=>  {
+      console.log("nabk options ", data)
+      
+
+    })
   }
  /** Announce the change in sort state for assistive technology. */
  announceSortChange(sortState: Sort) {

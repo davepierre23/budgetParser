@@ -1,2 +1,9 @@
 .vscodheoherokue 
 __pycache__
+
+#MAC
+.DS_Store
+
+*csv
+*xls
+*xlsx

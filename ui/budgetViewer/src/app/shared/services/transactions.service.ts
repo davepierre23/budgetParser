@@ -13,6 +13,7 @@ import { Transaction } from 'src/models/transactionForm';
 export class TransactionsService {
   private serverUrl = 'http://localhost:8000/transactions';
   private detail = '/details'
+  private bankActions ='/bankActions'
    constructor(
     private httpClient: HttpClient,
     public router: Router,
@@ -21,6 +22,14 @@ export class TransactionsService {
   getAll():Observable<Transaction[]> {
     
     return this.httpClient.get<Transaction[]>(this.serverUrl).pipe(map(result => result.map((data)=>{
+      data = new Transaction(data)
+      return data
+    })));
+ 
+  }
+  getBankActions():Observable<Transaction[]> {
+    
+    return this.httpClient.get<Transaction[]>(this.serverUrl+this.bankActions).pipe(map(result => result.map((data)=>{
       data = new Transaction(data)
       return data
     })));
