@@ -96,5 +96,5 @@ def main(name):
 
 
 if __name__ == "__main__":
-    main(DATA_DIR+"/pcbanking (1).csv")
+    main(DATA_DIR+"pcbanking 2.csv")
     

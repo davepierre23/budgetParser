@@ -19,7 +19,7 @@ MODEL_CATEGORY= 'Category'
 
     # Define categories based on keywords in the "Description" column
 categories = {
-        "Investments":["Wealthsimple"],
+        "Wealthsimple":["Wealthsimple"],
         "Alcohol": ["LCBO/RAO"],
         "Food": [  "JACK ASTOR'S","MCDONALD'S","Seoul Dog","REXALL","PIZZERIA","COBS BREAD","MILKMAN ","SUSHI","BRIG","LEXINGTON SMOKEHOUSE",'CHICK-FIL-A' ,"KFC","FRUIT","BROADWAY","DELICIOUS STEAKHOUSE","TIM HORTONS","STARBUCKS", "LUNCHBOX","Wild Wing ", "THE ALLEY","GYUBEE","RED LOBSTER", 'MENCHIE',"SQ *PANCHO'S ", "DAOL" , "SOUL STONE","MR. PRETZEL","METROPOLITAIN",
                     "St. Louis Bar","Bagel","LE ST LAURENT","MAVERICK'S",'POPEYES', "Chatime ","SOBEYS",'SHAKER',"MARY BROWN'S","SUSHI KAN","MANDARIN", "SHOPPERS",
