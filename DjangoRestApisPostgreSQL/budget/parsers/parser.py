@@ -19,6 +19,7 @@ MODEL_CATEGORY= 'Category'
 
     # Define categories based on keywords in the "Description" column
 categories = {
+        "Investments":["Wealthsimple"],
         "Alcohol": ["LCBO/RAO"],
         "Food": [  "JACK ASTOR'S","MCDONALD'S","Seoul Dog","REXALL","PIZZERIA","COBS BREAD","MILKMAN ","SUSHI","BRIG","LEXINGTON SMOKEHOUSE",'CHICK-FIL-A' ,"KFC","FRUIT","BROADWAY","DELICIOUS STEAKHOUSE","TIM HORTONS","STARBUCKS", "LUNCHBOX","Wild Wing ", "THE ALLEY","GYUBEE","RED LOBSTER", 'MENCHIE',"SQ *PANCHO'S ", "DAOL" , "SOUL STONE","MR. PRETZEL","METROPOLITAIN",
                     "St. Louis Bar","Bagel","LE ST LAURENT","MAVERICK'S",'POPEYES', "Chatime ","SOBEYS",'SHAKER',"MARY BROWN'S","SUSHI KAN","MANDARIN", "SHOPPERS",
@@ -109,8 +110,8 @@ def parse():
         df.to_csv(WORK_FILE, index=False)
 
     df[MODEL_DATE] = pd.to_datetime(df[MODEL_DATE] ) 
+
     parseExpenseCatogeryByMonth(df)
-    parseExpenseCategoryByYear(df)
 
    
 
@@ -161,6 +162,16 @@ def parseExpenseCatogeryByMonth(df):
     # print the aggregated income by month and year
     printResults(expense_by_month_year)
 
+def parseTCGCategoryByYear(df):
+
+   # group the data by month and year, and sum the income
+     # Group the data by month, year, and category, and sum the 'Amount' column
+
+    print()
+    # print the aggregated income by month and year
+
+
+
 def parseExpenseCategoryByYear(df):
 
    # group the data by month and year, and sum the income
@@ -170,7 +181,6 @@ def parseExpenseCategoryByYear(df):
 
     # print the aggregated income by month and year
     log.info(expense_by_year)
-
 
 def parseExpenseByYear(df):
 
