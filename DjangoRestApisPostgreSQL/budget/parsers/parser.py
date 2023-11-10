@@ -16,22 +16,30 @@ MODEL_AMOUNT= 'Amount'
 MODEL_ORIGIN= 'Origin'
 MODEL_CATEGORY= 'Category'
 
-
     # Define categories based on keywords in the "Description" column
+
+
 categories = {
         "Wealthsimple":["Wealthsimple"],
-        "Alcohol": ["LCBO/RAO"],
-        "Food": [  "JACK ASTOR'S","MCDONALD'S","Seoul Dog","REXALL","PIZZERIA","COBS BREAD","MILKMAN ","SUSHI","BRIG","LEXINGTON SMOKEHOUSE",'CHICK-FIL-A' ,"KFC","FRUIT","BROADWAY","DELICIOUS STEAKHOUSE","TIM HORTONS","STARBUCKS", "LUNCHBOX","Wild Wing ", "THE ALLEY","GYUBEE","RED LOBSTER", 'MENCHIE',"SQ *PANCHO'S ", "DAOL" , "SOUL STONE","MR. PRETZEL","METROPOLITAIN",
-                    "St. Louis Bar","Bagel","LE ST LAURENT","MAVERICK'S",'POPEYES', "Chatime ","SOBEYS",'SHAKER',"MARY BROWN'S","SUSHI KAN","MANDARIN", "SHOPPERS",
-            "WENDY'S", 'LE MIEN',"METRO","JOLLIBEE-","MOXIES","T&T","LOBLAWS","AZTEC","GREEN FRESH","FARM BOY","TEALIVE","BOSTON PIZZA","EAST SIDE MARIO",
-            "Pizza Pizza ",'THE GREAT CANADIAN PO', 'UBER EATS ', "Shoppers Drug Mart",'BIG BONE BBQ',"NSEYA'S"],
-        "Wardrobe": ["Tip Top", "Shoe Company",'SP JOJIKA','SHEIN',"VALUE VILLAGE","OVO"],
+        "Alcohol": ["LCBO/RAO","PURE BREW"],
+        "Groceries":['FLASHFOOD',"BULK BARN", "NO FRILLS", 'FOOD BASICS',"METRO","SOBEYS","LOBLAWS","WAL*MART","NSEYA'S","Shoppers Drug Mart","FARM BOY","REXALL",],
+        "Restaurents": [ "Cafe","Subway", "FOOD",'PITA BELL KABAB', "Chances",'SHAWARMA PALACE', 'WENDYS', 'LOUIS', "JONNY CANUCK'S", 'CAFÉ LATTE', 'NOM NOM', 'PRESOTEA', 'HEY KITCHEN', 'MEZZANOTTE', 'A&W',"BAKERY","DOUGHNUTS","JACK ASTOR'S","MCDONALD'S","DOORDASH","Seoul Dog","PIZZERIA",'FAIRMONT CHATEAU LAURIE ',"COBS BREAD","MILKMAN ","SUSHI","BRIG","LEXINGTON SMOKEHOUSE",'CHICK-FIL-A' ,"KFC","FRUIT","BROADWAY","DELICIOUS STEAKHOUSE","TIM HORTONS","STARBUCKS", "LUNCHBOX","Wild Wing ", "THE ALLEY","GYUBEE","RED LOBSTER", 'MENCHIE',"SQ *PANCHO'S ", "DAOL" , "SOUL STONE","MR. PRETZEL","METROPOLITAIN",
+                    "St. Louis Bar","Bagel","LE ST LAURENT","MAVERICK'S",'POPEYES', "Chatime ",'SHAKER',"MARY BROWN'S","SUSHI KAN","MANDARIN", "SHOPPERS",
+             "WENDY'S", 'LE MIEN',"JOLLIBEE-","MOXIES","T&T","AZTEC","GREEN FRESH","TEALIVE","BOSTON PIZZA","EAST SIDE MARIO",
+            "Pizza Pizza ",'THE GREAT CANADIAN PO', 'UBER EATS ', 'BIG BONE BBQ',],
+        "Clothing": ["Tip Top","SPORT CHEK", "FAIRWEATHER","THREADS TAILORS","Shoe Company",'SP JOJIKA','SHEIN',"VALUE VILLAGE","OVO","BOATHOUSE","LEZE THE LABEL"],
+
         "Entertainment": [
+            "GOLF",
+            "PUTTING EDGE",
             "NORDIK",
             "TEE 2 GREEN",
             "DOLLYS",
             "STEAM",
+            "PHD IN WAVES",
+            "CALYPSO",
             "TICKET",
+            "SMASH ROOM",
             "LANDMARK",
             "WHITE SANDS",
             "Orleans Bowling.com",
@@ -45,17 +53,24 @@ categories = {
             'Canada Computers',
             'PLAYSTATION',
             'RED DRAGON',
+            "VRADVENTURES.ZONE ",
+            'VR ADVENTURES.ZONE',
+            "TCGPLAYER ",
             'TCGPLAYER.COM',
             "401 GAMES"
   
         ],
+        "Car Loan":["Loan Payment","BANK STREET MAZDA"],
+
+        "Car Insurance":["BELAIR INS/ASS"],
+        "Online Shopping":["LEGO","JEWELLERS"],
         'Transporation':[ "Uber ","Lyft",'PRESTO',"PPARK","BUSBUD"],
-        "Doctors/dental/vision":["APPLE'S CROWN",'ACE OF SPADES',"CLEARVIEW"],
-        "Beauty":["CLORE","MONTEGO","MONAT"],
+        "Doctors/dental/vision":["APPLE'S CROWN",'ACE OF SPADES',"CLEARVIEW","KITS","Echo"],
+        "Personal Care":["CLORE","MONTEGO","MONAT","NANCY'S NAILS AND LASHE","BATH & BODY WORKS"],
         "Gym":   [ "SHOWCASE ","SP CROSSROPE",'FIT4LESS'],
         "Home goods": ["AMZN", "APPLE","Dollarama","PANDABUY","BEST BUY","DOLLAR TREE","GIANT TIGER","CDN TIRE","HUDSON'S BAY",'AMAZON','WAL-MART'],
         'Income':['Basic Pay','Acting / Appointment Pay'],
-        'Gas':['PIONEER',"ULTRAMAR",'CIRCLEK',"MOBIL","GAS","PETROCAN", 'MRGAS','ESSO','SHELL',"FUEL"],
+        'Gas':['PIONEER',"ULTRAMAR",'CIRCLEK',"MACEWEN","MOBIL","GAS","PETROCAN", 'MRGAS','ESSO','SHELL',"FUEL","PETRO"],
         'Church':["CALVARY CHURCH"],
         'Education':["OPTIONS"],
         "Miscellaneous Payement": [
@@ -64,6 +79,7 @@ categories = {
             'REFUNDED'
         ],
         "Miscellaneous Charges": [
+            "PARKSMART",
             'MONTHLY FEES',
             "Dishonoured Payment",
             "PREMIUM"
@@ -87,31 +103,38 @@ def parse():
     else:
     
         parsedData=[]
+        unparsed_files = []
         parsers= loadList()
 
         # Loop through each file in the directory
         for filename in os.listdir(DATA_DIR):
             filepath = os.path.join(DATA_DIR, filename)
-            print(filepath)
 
+            found_parser = False
 
-            for  parse  in parsers:
-                if(parse.canParse(filepath)):
+            #check if a parser can parse it 
+            for parse in parsers:
+                if parse.canParse(filepath):
                     parsedData.append(parse.parse(filepath))
-        df = parsedData[0]  
-       
-        for data  in range(len(parsedData) ):
-            if(data ==1):
-                df = parsedData[0]          
-            else:
-                df = pd.concat([df, parsedData[data]], axis=0)
+                    found_parser = True
+                    break  # Exit the loop once a parser is found
+
+            if not found_parser:
+                unparsed_files.append(filepath)  # Add the file to the list of unparsed files
+        
+        # Concatenate all DataFrames in 'parsedData' into a single DataFrame
+        df = pd.concat(parsedData, axis=0, ignore_index=True)
+
         df[MODEL_DATE] = pd.to_datetime(df[MODEL_DATE] ) 
         addCategorize(df)
         df.to_csv(WORK_FILE, index=False)
 
+    df[MODEL_DESCRIPTION] = df[MODEL_DESCRIPTION].str.strip()
     df[MODEL_DATE] = pd.to_datetime(df[MODEL_DATE] ) 
-
+    #fitler by 2023
+    df = df[df[MODEL_DATE].dt.year == 2023]
     parseExpenseCatogeryByMonth(df)
+    viewUnknownRecords(df)
 
    
 
@@ -135,14 +158,8 @@ def printResults(df):
 def categorize(row):
     for category, keywords in categories.items():
         for keyword in keywords:
-            if isinstance(row[MODEL_DESCRIPTION], float):
-                print("float", row[MODEL_DESCRIPTION])
-            else:
-                if(row[MODEL_DESCRIPTION].upper().strip().find(keyword.upper().strip())>-1):
-                    return category
-
-                
-    print(row[MODEL_DESCRIPTION])
+            if(row[MODEL_DESCRIPTION].upper().strip().find(keyword.upper().strip())>-1):
+                    return category      
     return 'Unknown'
 
 def parseExpenseByMonth(df):
@@ -152,23 +169,21 @@ def parseExpenseByMonth(df):
     # print the aggregated income by month and year
     log.info(expense_by_month_year)
 
+
 def parseExpenseCatogeryByMonth(df):
     expense = df[df[MODEL_AMOUNT] < 0]
 
 
     # Group the data by month, year, and category, and sum the 'Amount' column
-    expense_by_month_year = expense.groupby([MODEL_CATEGORY,expense[MODEL_DATE].dt.year,expense[MODEL_DATE].dt.month])[MODEL_AMOUNT].sum()
-
+    expense_by_month_year = expense.groupby([
+        MODEL_CATEGORY,
+        expense[MODEL_DATE].dt.year,
+        expense[MODEL_DATE].dt.strftime('%B')  # Format the month as "Month"
+    ])[MODEL_AMOUNT].sum()
     # print the aggregated income by month and year
+
+    expense_by_month_year.to_csv("ecample.CSV", index=False)
     printResults(expense_by_month_year)
-
-def parseTCGCategoryByYear(df):
-
-   # group the data by month and year, and sum the income
-     # Group the data by month, year, and category, and sum the 'Amount' column
-
-    print()
-    # print the aggregated income by month and year
 
 
 
@@ -181,6 +196,14 @@ def parseExpenseCategoryByYear(df):
 
     # print the aggregated income by month and year
     log.info(expense_by_year)
+
+def viewUnknownRecords(df):
+    category_to_filter = 'Unknown'
+
+    # Filter the DataFrame to get records with the specific category
+    filtered_expense = df[df[MODEL_CATEGORY] == category_to_filter]
+
+    printUniqueNames(filtered_expense)
 
 def parseExpenseByYear(df):
 

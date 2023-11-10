@@ -3,7 +3,7 @@ import sys
 import pandas as pd
 
 import logging as log
-logging.basicConfig(format='%(message)s', level=logging.DEBUG)
+logging.basicConfig(format='%(message)s', level=logging.INFO)
 DATA_DIR = "/Users/davepierre/Documents/Projects/budgetParser/data/"
 DATE='Date'
 AMOUNT='Amount'
@@ -16,15 +16,23 @@ MODEL_DATE='Date'
 MODEL_DESCRIPTION= 'Description'
 MODEL_AMOUNT= 'Amount'
 MODEL_ORIGIN= 'Origin'
+
+ignores=['DILAWRI ' ,'EQUITABLE BANK' ,'American Express'
+ 'MB-CREDIT CARD/LOC PAY.' ,'Tangerine' ,'MB-TRANSFER'
+ 'ABM Withdrawal' ,'WITHDRAWAL', 'CANADA' ,'FREE INTERAC E-TRANSFER']
+
 def canParse(full_path):
     return  "pcbanking"  in full_path 
 
 def parse(name):
-    df = pd.read_csv(name)
+    df =pd.read_csv(name, encoding='unicode_escape')
     if(df.shape[1]==3):
         df.columns = [DATE,DESCRIPTION, AMOUNT]
     elif(df.shape[1]==5):
         df.columns = [DATE, AMOUNT,NOTHING,TYPE, DESCRIPTION]
+
+        df[DESCRIPTION].fillna(df[TYPE], inplace=True)
+
         # drop the 'Nothing' column
         df = df.drop(NOTHING, axis=1)
 
@@ -74,15 +82,38 @@ def parseByYear(name=""):
 
     # print the aggregated income by month and year
     log.debug(expense_by_year)
+    
+def removeIgnored(df):
+    ignores = [
+        'DILAWRI CHEVROLET BUICK GATINEAU',
+        'EQUITABLE BANK',
+        'American Express',
+        'MB-CREDIT CARD/LOC PAY.',
+        'Tangerine',
+        'MB-TRANSFER',
+        'ABM Withdrawal',
+        'WITHDRAWAL',
+        'CANADA',
+        'FREE INTERAC E-TRANSFER'
+    ]
+
+    # Use the `isin` method to check if the "DESCRIPTION" is in the `ignores` list
+    mask = ~df[MODEL_DESCRIPTION].isin(ignores)
+
+    # Apply the mask to filter out rows that are not in the `ignores` list
+    return df[mask]
 
 def convertToModels(df):
  
     new_df = df.loc[:, [DATE,DESCRIPTION, AMOUNT]]
+    new_df[MODEL_DESCRIPTION]= new_df[MODEL_DESCRIPTION].str.strip()
+    new_df = removeIgnored(new_df)
 
     #basic model 
     #Date  #Description #Amount
     new_df.columns = [MODEL_DATE,MODEL_DESCRIPTION, MODEL_AMOUNT]
     new_df[MODEL_ORIGIN] = 'SCOTIA'
+ 
     log.info(new_df)
     return new_df
 def main(name):
@@ -96,5 +127,5 @@ def main(name):
 
 
 if __name__ == "__main__":
-    main(DATA_DIR+"pcbanking 2.csv")
+    main(DATA_DIR+"pcbanking.csv")
     

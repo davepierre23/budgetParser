@@ -9,7 +9,7 @@ logging.basicConfig(format='%(message)s', level=logging.INFO)
 import os
 import filecmp
 
-directory = '/Users/davepierre/Downloads'
+directory = '/Users/davepierre/Downloads/data'
 DATE='Transaction date'
 AMOUNT='Amount'
 TANGERINE_SHEET='Money-Back Credit Card'
@@ -38,7 +38,7 @@ def combineTangerineSheets():
     # Write the combined data to a new Excel file
     combined_data.to_csv(OUTPUT_DIRECTORY+COMBINED_SHEET, index=False)
 def canParse(full_path):
-    return "Money-Back Credit Card"  in full_path
+    return "5360 xxxx  xxxx 1480"  in full_path
 def main(name):
 
     n = len(sys.argv)
@@ -46,8 +46,8 @@ def main(name):
         fileName = sys.argv[1]
     else:
         fileName = name
-    parseByYear(name)
-    parseByMonth(name)
+    parseByYear(fileName)
+    parseByMonth(fileName)
   
 def removeDuplicateFiles():
     # Get a list of CSV files in the directory
@@ -73,12 +73,13 @@ def containDuplicateFile(df):
         return True
 def parse(name):
     # load the Excel sheet into a pandas dataframe
-    df = pd.read_csv(name)
+    df =pd.read_csv(name, encoding='unicode_escape')
     df[DATE] = pd.to_datetime(df[DATE])
     #convert the values of the excel sheet 
     df[AMOUNT] = df[AMOUNT].astype(float)
     df = df[df[AMOUNT] < 0]
     df = convertToModels(df)
+    
     return df
 
 def parseByMonth(name=""):
@@ -105,6 +106,7 @@ def parseByYear(name=""):
 def convertToModels(df):
  
     new_df = df.loc[:, [DATE,DESCRIPTION, AMOUNT]]
+    print(new_df)
 
     #basic model 
     #Date  #Description #Amount
@@ -113,8 +115,6 @@ def convertToModels(df):
     return new_df
 
 if __name__ == "__main__":
-   
-    combineTangerineSheets()
-    main(COMBINED_SHEET)
+    print(parse(directory+"/5360 xxxx  xxxx 1480 (5).CSV"))
     
 
