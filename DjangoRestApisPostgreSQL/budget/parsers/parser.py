@@ -74,7 +74,6 @@ categories = {
         'Church':["CALVARY CHURCH"],
         'Education':["OPTIONS"],
         "Miscellaneous Payement": [
-            "Dishonoured Payment",
             "Returned Payment",
             'REFUNDED'
         ],
