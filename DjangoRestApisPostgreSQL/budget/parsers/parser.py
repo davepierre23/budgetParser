@@ -132,7 +132,7 @@ def parse():
     df[MODEL_DATE] = pd.to_datetime(df[MODEL_DATE] ) 
     #fitler by 2023
     df = df[df[MODEL_DATE].dt.year == 2023]
-    parseExpenseCatogeryByMonth(df)
+    parseTranscationsCatogeryByMonth(df)
     viewUnknownRecords(df)
 
    
@@ -181,10 +181,21 @@ def parseExpenseCatogeryByMonth(df):
     ])[MODEL_AMOUNT].sum()
     # print the aggregated income by month and year
 
-    expense_by_month_year.to_csv("ecample.CSV", index=False)
     printResults(expense_by_month_year)
 
 
+def parseTranscationsCatogeryByMonth(df):
+    
+
+    # Group the data by month, year, and category, and sum the 'Amount' column
+    expense_by_month_year = df.groupby([
+        MODEL_CATEGORY,
+        df[MODEL_DATE].dt.year,
+        df[MODEL_DATE].dt.strftime('%B')  # Format the month as "Month"
+    ])[MODEL_AMOUNT].sum()
+    # print the aggregated income by month and year
+
+    printResults(expense_by_month_year)
 
 def parseExpenseCategoryByYear(df):
 
@@ -213,6 +224,14 @@ def parseExpenseByYear(df):
     # print the aggregated income by month and year
     log.info(expense_by_year)
 
+def parseTranscationByYear(df):
+
+   # group the data by month and year, and sum the income
+    transcations = df[df[MODEL_AMOUNT] < 0]
+    transcations_by_year = transcations.groupby([transcations[MODEL_DATE].dt.year])[MODEL_AMOUNT].sum()
+
+    # print the aggregated income by month and year
+    log.info(transcations_by_year)
 
 if __name__ == "__main__":
     parse()
