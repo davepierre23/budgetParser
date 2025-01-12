@@ -1,24 +1,30 @@
+
+
+import pandas as pd
+import os
+import logging as log
+
 import scotiaParser
-import americianExpressParser 
+import americianExpressParser
 import simpliCreditParser
 import CBSAPayHistory
 import tangerineParser
 import wealthSimple
-import pandas as pd
-import os
 
-import logging as log
-log.basicConfig(format='%(message)s', level=log.INFO)
+# Configuration
+log.basicConfig(format="%(message)s", level=log.INFO)
 DATA_DIR = "/Users/davepierre/Documents/Projects/budgetParser/data"
-WORK_FILE='my_data.csv'
-MODEL_DATE='Date'
-MODEL_DESCRIPTION= 'Description'
-MODEL_AMOUNT= 'Amount'
-MODEL_ORIGIN= 'Origin'
-MODEL_CATEGORY= 'Category'
-YEAR =2024
-    # Define categories based on keywords in the "Description" column
+WORK_FILE = "my_data.csv"
 
+MODEL_DATE = "Date"
+MODEL_DESCRIPTION = "Description"
+MODEL_AMOUNT = "Amount"
+MODEL_ORIGIN = "Origin"
+MODEL_CATEGORY = "Category"
+
+YEAR = 2024
+
+# Define categories based on keywords in the "Description" column
 
 categories = {
         "Wealthsimple":["Wealthsimple"],
@@ -104,181 +110,120 @@ categories = {
         ]
     }
 
+def load_parsers():
+    """Load all parsers."""
+    return [
+        scotiaParser,
+        americianExpressParser,
+        CBSAPayHistory,
+        tangerineParser,
+        simpliCreditParser,
+        wealthSimple,
+    ]
 
 
-def loadList():
-    parsers =[]
-    parsers.append(scotiaParser)
-    parsers.append(americianExpressParser)
-    parsers.append(CBSAPayHistory)
-    parsers.append(tangerineParser)
-    parsers.append(simpliCreditParser)
-
-    parsers.append(wealthSimple)
-    return parsers
+def categorize(row):
+    """Categorize transactions based on description."""
+    for category, keywords in categories.items():
+        for keyword in keywords:
+            if keyword.upper() in row[MODEL_DESCRIPTION].upper():
+                return category
+    return "Unknown"
 
 
-def parse():
+def add_category_column(df):
+    """Add a category column to the DataFrame."""
+    df[MODEL_CATEGORY] = df.apply(categorize, axis=1)
 
 
+def process_files():
+    """Parse and process transaction files into a unified DataFrame."""
     if os.path.exists(WORK_FILE):
         df = pd.read_csv(WORK_FILE)
     else:
-    
-        parsedData=[]
+        parsers = load_parsers()
+        parsed_data = []
         unparsed_files = []
-        parsers= loadList()
 
-        # Loop through each file in the directory
         for filename in os.listdir(DATA_DIR):
             filepath = os.path.join(DATA_DIR, filename)
+            parsed = False
 
-            found_parser = False
+            for parser in parsers:
+                if parser.canParse(filepath):
+                    parsed_data.append(parser.parse(filepath))
+                    parsed = True
+                    break
 
-            #check if a parser can parse it 
-            for parse in parsers:
-                if parse.canParse(filepath):
-                    parsedData.append(parse.parse(filepath))
-                    found_parser = True
-                    break  # Exit the loop once a parser is found
+            if not parsed:
+                unparsed_files.append(filepath)
 
-            if not found_parser:
-                unparsed_files.append(filepath)  # Add the file to the list of unparsed files
-        
-        # Concatenate all DataFrames in 'parsedData' into a single DataFrame
-        df = pd.concat(parsedData, axis=0, ignore_index=True)
+        if not parsed_data:
+            raise ValueError("No valid data was parsed.")
 
-        df[MODEL_DATE] = pd.to_datetime(df[MODEL_DATE] ) 
-        addCategorize(df)
+        df = pd.concat(parsed_data, ignore_index=True)
+        df[MODEL_DATE] = pd.to_datetime(df[MODEL_DATE])
+        add_category_column(df)
         df.to_csv(WORK_FILE, index=False)
 
-    df[MODEL_DESCRIPTION] = df[MODEL_DESCRIPTION].str.strip()
-    df[MODEL_DATE] = pd.to_datetime(df[MODEL_DATE] ) 
-    #fitler by 2023
-    df = df[df[MODEL_DATE].dt.year ==  YEAR]
-   
-    items = df.to_dict(orient='records')
-
-    parseTranscationsCatogeryByMonth(df)
-    output= 'output.xlsx'
-    log.info("Saving results to "+ output)
-    df.to_excel(output, index=True)
-
-    log.info("The results of the unknown records :")
-    viewUnknownRecords(df)
-
-   
+    df[MODEL_DATE] = pd.to_datetime(df[MODEL_DATE])
+    return df[df[MODEL_DATE].dt.year == YEAR]
 
 
-def printUniqueNames(df):
+def yearly_summary(df):
+    """Generate yearly expense and income summaries with totals and net savings."""
+    # Separate expenses and income
+    expenses = df[df[MODEL_AMOUNT] < 0]
+    income = df[df[MODEL_AMOUNT] > 0]
 
-    print(df[MODEL_DESCRIPTION].unique())
+    # Group and aggregate by category
+    expense_summary = (
+        expenses.groupby([MODEL_CATEGORY])[MODEL_AMOUNT]
+        .sum()
+        .sort_values(ascending=False)
+    )
+    income_summary = (
+        income.groupby([MODEL_CATEGORY])[MODEL_AMOUNT]
+        .sum()
+        .sort_values(ascending=False)
+    )
 
+    # Calculate totals
+    total_expenses = expenses[MODEL_AMOUNT].sum()
+    total_income = income[MODEL_AMOUNT].sum()
+    net_savings = total_income + total_expenses  # Add because expenses are negative
 
-def addCategorize(df):
-       # Add a new column to the dataframe based on categories
-    df[MODEL_CATEGORY] = df.apply(categorize, axis=1)
+    # Log results
+    log.info("\nExpense Summary by Category:")
+    log.info(expense_summary)
+    log.info("\nIncome Summary by Category:")
+    log.info(income_summary)
+    log.info(f"\nTotal Expenses: {total_expenses:.2f}")
+    log.info(f"Total Income: {total_income:.2f}")
+    log.info(f"Net Savings: {net_savings:.2f}")
 
-def printResults(df):
-    # Iterate over each row and print it
-    for i in range(0, len(df), 5):
-        print(df.iloc[i:i+5])
-        print()  # add a blank line between groups of 5 rows
+    # Save to Excel
+    with pd.ExcelWriter("yearly_summary.xlsx") as writer:
+        expense_summary.to_excel(writer, sheet_name="Expenses")
+        income_summary.to_excel(writer, sheet_name="Income")
 
-# Function to determine the category of a given row in the dataframe
-def categorize(row):
-    for category, keywords in categories.items():
-        for keyword in keywords:
-            if(row[MODEL_DESCRIPTION].upper().strip().find(keyword.upper().strip())>-1):
-                    return category      
-    return 'Unknown'
+        # Add totals and net savings to a summary sheet
+        summary_data = {
+            "Metric": ["Total Expenses", "Total Income", "Net Savings"],
+            "Amount": [total_expenses, total_income, net_savings],
+        }
+        summary_df = pd.DataFrame(summary_data)
+        summary_df.to_excel(writer, sheet_name="Summary", index=False)
 
-def parseExpenseByMonth(df):
-    expense = df[df[MODEL_AMOUNT] < 0]
-    expense_by_month_year = expense.groupby([expense[MODEL_DATE].dt.year, expense[MODEL_DATE].dt.month,MODEL_CATEGORY])[MODEL_AMOUNT].sum()
-
-    # print the aggregated income by month and year
-    log.info(expense_by_month_year)
-
-
-def parseExpenseCatogeryByMonth(df):
-    expense = df[df[MODEL_AMOUNT] < 0]
-
-
-    # Group the data by month, year, and category, and sum the 'Amount' column
-    expense_by_month_year = expense.groupby([
-        MODEL_CATEGORY,
-        expense[MODEL_DATE].dt.year,
-        expense[MODEL_DATE].dt.strftime('%B')  # Format the month as "Month"
-    ])[MODEL_AMOUNT].sum()
-    # print the aggregated income by month and year
-
-    printResults(expense_by_month_year)
-
-
-def parseTranscationsCatogeryByMonth(df):
-    # Assuming MODEL_CATEGORY, MODEL_DATE, and MODEL_AMOUNT are defined elsewhere
-    #assume that data has only one year of data
-    
-    # Group the data by month, year, and category, and sum the 'Amount' column
-    expense_by_month_year = df.groupby([
-        MODEL_CATEGORY,
-        df[MODEL_DATE].dt.strftime('%B')  # Format the month as "Month"
-    ])[MODEL_AMOUNT].sum()
-    
-    # Print the aggregated income by month and year
-    printResults(expense_by_month_year)
-    
-    # Convert the grouped data to a DataFrame
-    expense_by_month_year_df = expense_by_month_year.reset_index()
-    pivot_df = expense_by_month_year_df.pivot_table(index=MODEL_CATEGORY, columns=[ MODEL_DATE], values=MODEL_AMOUNT, aggfunc='sum')
-    
-    # Convert negative values to positive
-    pivot_df = pivot_df.abs()
-
-    # Reorder the columns based on the chronological order of months
-    months_order = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
-    pivot_df = pivot_df.reindex(columns=months_order, level=0)
-
-    # Save the pivoted DataFrame to an Excel file
-    pivot_df.to_excel('expense_by_month_year.xlsx')
+    log.info("Yearly summary with totals and net savings saved to 'yearly_summary.xlsx'.")
 
 
-def parseExpenseCategoryByYear(df):
 
-   # group the data by month and year, and sum the income
-    expense = df[df[MODEL_AMOUNT] < 0]
-     # Group the data by month, year, and category, and sum the 'Amount' column
-    expense_by_year = expense.groupby([MODEL_CATEGORY,expense[MODEL_DATE].dt.year])[MODEL_AMOUNT].sum()
+def parse():
+    """Main parsing function."""
+    df = process_files()
+    yearly_summary(df)
 
-    # print the aggregated income by month and year
-    log.info(expense_by_year)
-
-def viewUnknownRecords(df):
-    category_to_filter = 'Unknown'
-
-    # Filter the DataFrame to get records with the specific category
-    filtered_expense = df[df[MODEL_CATEGORY] == category_to_filter]
-
-    printUniqueNames(filtered_expense)
-
-def parseExpenseByYear(df):
-
-   # group the data by month and year, and sum the income
-    expense = df[df[MODEL_AMOUNT] < 0]
-    expense_by_year = expense.groupby([expense[MODEL_DATE].dt.year])[MODEL_AMOUNT].sum()
-
-    # print the aggregated income by month and year
-    log.info(expense_by_year)
-
-def parseTranscationByYear(df):
-
-   # group the data by month and year, and sum the income
-    transcations = df[df[MODEL_AMOUNT] < 0]
-    transcations_by_year = transcations.groupby([transcations[MODEL_DATE].dt.year])[MODEL_AMOUNT].sum()
-
-    # print the aggregated income by month and year
-    log.info(transcations_by_year)
 
 if __name__ == "__main__":
     parse()
