@@ -103,6 +103,9 @@ categories = {
          
         ]
     }
+
+
+
 def loadList():
     parsers =[]
     parsers.append(scotiaParser)
