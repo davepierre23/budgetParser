@@ -9,10 +9,11 @@ logging.basicConfig(format='%(message)s', level=logging.INFO)
 import os
 import filecmp
 
-directory = '/Users/davepierre/Downloads/data'
+directory = "/Users/davepierre/Documents/Projects/budgetParser/data"
 DATE='Transaction date'
 AMOUNT='Amount'
 TANGERINE_SHEET='Money-Back Credit Card'
+TANGERINE_SHEET2='5360 xxxx  xxxx 1480'
 OUTPUT_DIRECTORY=''
 COMBINED_SHEET= 'combined_Tangerine.csv'
 DESCRIPTION = 'Name'
@@ -29,7 +30,7 @@ def combineTangerineSheets():
 
     # Loop through each file in the directory
     for filename in os.listdir(directory):
-        if filename.startswith(TANGERINE_SHEET):  # check if the file is an Excel file
+        if filename.startswith(TANGERINE_SHEET) or  filename.startswith(TANGERINE_SHEET2):  # check if the file is an Excel file
             log.debug(filename)
             filepath = os.path.join(directory, filename)
             df = pd.read_csv(filepath)
@@ -38,7 +39,7 @@ def combineTangerineSheets():
     # Write the combined data to a new Excel file
     combined_data.to_csv(OUTPUT_DIRECTORY+COMBINED_SHEET, index=False)
 def canParse(full_path):
-    return "5360 xxxx  xxxx 1480"  in full_path
+    return TANGERINE_SHEET in full_path or TANGERINE_SHEET2 in full_path
 def main(name):
 
     n = len(sys.argv)

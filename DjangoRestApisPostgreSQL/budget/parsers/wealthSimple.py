@@ -11,15 +11,16 @@ import filecmp
 
 directory =  "/Users/davepierre/Documents/Projects/budgetParser/data"
 
-DATE='Date'
-AMOUNT='Amount'
+DATE='date'
+AMOUNT='amount'
 TANGERINE_SHEET='Money-Back Credit Card'
 OUTPUT_DIRECTORY=''
 COMBINED_SHEET= 'combined_Tangerine.csv'
-DESCRIPTION = 'Name'
+DESCRIPTION = 'description'
 
 MODEL_DATE='Date'
 MODEL_DESCRIPTION= 'Description'
+	 	 
 MODEL_AMOUNT= 'Amount'
 MODEL_ORIGIN= 'Origin'
 def combineTangerineSheets():
@@ -39,7 +40,7 @@ def combineTangerineSheets():
     # Write the combined data to a new Excel file
     combined_data.to_csv(OUTPUT_DIRECTORY+COMBINED_SHEET, index=False)
 def canParse(full_path):
-    return "4012914604.CSV"  in full_path
+    return "monthly-statement-transactions"  in full_path
 def main(name):
 
     n = len(sys.argv)
@@ -125,18 +126,52 @@ def parseByYear(name=""):
     return 
   
 def convertToModels(df):
- 
-    new_df = df.loc[:, [DATE,DESCRIPTION, AMOUNT]]
+    """
+    Convert the DataFrame to the required model format.
+
+    Parameters:
+    df (DataFrame): The input DataFrame.
+  
+
+    Returns:
+    DataFrame: The cleaned and processed DataFrame.
+    """
+    # Filter transactions based on the specified column and value
+    print("Filtering transactions...")
+    filter_column= 'transaction'
+    filter_value="SPEND"
+    df = df[df[filter_column].str.contains(filter_value, na=False)]
+    
+    # Check the column names of the DataFrame
+    print("Columns in DataFrame:", df.columns)
+
+    # Ensure required columns exist
+    required_columns = [DATE, DESCRIPTION, AMOUNT]
+    for col in required_columns:
+        if col not in df.columns:
+            raise KeyError(f"Missing required column: {col}")
+
+    # Extract required columns
+    new_df = df.loc[:, [DATE, DESCRIPTION, AMOUNT]]
+    print("Filtered DataFrame:")
     print(new_df)
 
-    #basic model 
-    #Date  #Description #Amount
-    new_df.columns = [MODEL_DATE,MODEL_DESCRIPTION, MODEL_AMOUNT]
-    new_df[MODEL_ORIGIN] = 'Tangerine'
-    return new_df
+    # Rename columns to model names
+    new_df.columns = [MODEL_DATE, MODEL_DESCRIPTION, MODEL_AMOUNT]
+
+    # Add an origin column
+    new_df[MODEL_ORIGIN] = 'WEALTHSIMPLE'
+
+    # Remove rows where the 'Amount' column has NaN
+    cleaned_df = new_df.dropna(subset=[MODEL_AMOUNT])
+
+    print("Cleaned DataFrame:")
+    print(cleaned_df)
+
+    return cleaned_df
 
 if __name__ == "__main__":
-    print(parse(directory+"/4012914604.CSV"))
+    print(parse(directory+"/monthly-statement-transactions-WK2W7JL32CAD-2024-05-01.csv"))
     
 
- 
+  

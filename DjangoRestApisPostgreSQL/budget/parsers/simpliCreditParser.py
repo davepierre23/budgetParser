@@ -12,14 +12,15 @@ import filecmp
 directory =  "/Users/davepierre/Documents/Projects/budgetParser/data"
 
 DATE='Date'
-AMOUNT='Amount'
+AMOUNT=' Funds Out'
 TANGERINE_SHEET='Money-Back Credit Card'
 OUTPUT_DIRECTORY=''
 COMBINED_SHEET= 'combined_Tangerine.csv'
-DESCRIPTION = 'Name'
+DESCRIPTION = ' Transaction Details'
 
 MODEL_DATE='Date'
 MODEL_DESCRIPTION= 'Description'
+	 	 
 MODEL_AMOUNT= 'Amount'
 MODEL_ORIGIN= 'Origin'
 def combineTangerineSheets():
@@ -125,18 +126,35 @@ def parseByYear(name=""):
     return 
   
 def convertToModels(df):
- 
-    new_df = df.loc[:, [DATE,DESCRIPTION, AMOUNT]]
+
+    # Check the column names of the DataFrame
+    print("Columns in DataFrame:", df.columns)
+
+    # Ensure required columns exist
+    required_columns = [DATE, DESCRIPTION, AMOUNT]
+    for col in required_columns:
+        if col not in df.columns:
+            raise KeyError(f"Missing required column: {col}")
+
+    # Extract required columns
+    new_df = df.loc[:, [DATE, DESCRIPTION, AMOUNT]]
     print(new_df)
 
-    #basic model 
-    #Date  #Description #Amount
-    new_df.columns = [MODEL_DATE,MODEL_DESCRIPTION, MODEL_AMOUNT]
-    new_df[MODEL_ORIGIN] = 'Tangerine'
-    return new_df
+    # Rename columns to model names
+    new_df.columns = [MODEL_DATE, MODEL_DESCRIPTION, MODEL_AMOUNT]
 
-if __name__ == "__main__":
-    print(parse(directory+"/4012914604.CSV"))
+    # Add an origin column
+    new_df[MODEL_ORIGIN] = 'SIMPLI'
+
+    # Remove rows where the 'Amount' column has NaN
+    cleaned_df = new_df.dropna(subset=[MODEL_AMOUNT])
     
 
- 
+
+    return cleaned_df
+
+if __name__ == "__main__":
+    print(parse(directory+"/SIMPLII.csv"))
+    
+
+  

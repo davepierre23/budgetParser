@@ -1,9 +1,10 @@
 import scotiaParser
-import americianExpressParser
+import americianExpressParser 
+import simpliCreditParser
 import CBSAPayHistory
 import tangerineParser
+import wealthSimple
 import pandas as pd
-import sys
 import os
 
 import logging as log
@@ -15,22 +16,25 @@ MODEL_DESCRIPTION= 'Description'
 MODEL_AMOUNT= 'Amount'
 MODEL_ORIGIN= 'Origin'
 MODEL_CATEGORY= 'Category'
-
+YEAR =2024
     # Define categories based on keywords in the "Description" column
 
 
 categories = {
         "Wealthsimple":["Wealthsimple"],
         "Alcohol": ["LCBO/RAO","PURE BREW"],
-        "Groceries":['FLASHFOOD',"BULK BARN", "NO FRILLS", 'FOOD BASICS',"METRO","SOBEYS","LOBLAWS","WAL*MART","NSEYA'S","Shoppers Drug Mart","FARM BOY","REXALL",],
-        "Restaurents": [ "Cafe","Subway", "FOOD",'PITA BELL KABAB', "Chances",'SHAWARMA PALACE', 'WENDYS', 'LOUIS', "JONNY CANUCK'S", 'CAFÉ LATTE', 'NOM NOM', 'PRESOTEA', 'HEY KITCHEN', 'MEZZANOTTE', 'A&W',"BAKERY","DOUGHNUTS","JACK ASTOR'S","MCDONALD'S","DOORDASH","Seoul Dog","PIZZERIA",'FAIRMONT CHATEAU LAURIE ',"COBS BREAD","MILKMAN ","SUSHI","BRIG","LEXINGTON SMOKEHOUSE",'CHICK-FIL-A' ,"KFC","FRUIT","BROADWAY","DELICIOUS STEAKHOUSE","TIM HORTONS","STARBUCKS", "LUNCHBOX","Wild Wing ", "THE ALLEY","GYUBEE","RED LOBSTER", 'MENCHIE',"SQ *PANCHO'S ", "DAOL" , "SOUL STONE","MR. PRETZEL","METROPOLITAIN",
-                    "St. Louis Bar","Bagel","LE ST LAURENT","MAVERICK'S",'POPEYES', "Chatime ",'SHAKER',"MARY BROWN'S","SUSHI KAN","MANDARIN", "SHOPPERS",
+        "Groceries":["TooGoodT ",'FLASHFOOD','HALIBUT HOUSE ','WALMART.CA','FRESHCO',"BULK BARN","DUNKIN", "REVOLUTIONN","NO FRILLS", 'FOOD BASICS',"METRO","SOBEYS","LOBLAWS","WAL*MART","NSEYA'S","Shoppers Drug Mart","FARM BOY","REXALL",],
+        "Restaurents": [ "MIKE DEAN'S","Cafe","LITTLE CAESARS","ROYAL OAK","BOOSTER JUICE ",'CORA',"HALIBUT",'TIPIKLIZ','HARVEY','LEVEL ONE',"DAIRY QUEEN","SHOELESS JOES", "Subway","FOOD",'PITA BELL KABAB', "Chances",'SHAWARMA PALACE', 'WENDYS', 'LOUIS', "JONNY CANUCK'S", 'CAFÉ LATTE', 'NOM NOM', 'PRESOTEA', 'HEY KITCHEN', 'MEZZANOTTE', 'A&W',"BAKERY","DOUGHNUTS","JACK ASTOR'S","MCDONALD'S","DOORDASH","Seoul Dog","PIZZERIA",'FAIRMONT CHATEAU LAURIE ',"COBS BREAD","MILKMAN ","SUSHI","BRIG","LEXINGTON SMOKEHOUSE",'CHICK-FIL-A' ,"KFC","FRUIT","BROADWAY","DELICIOUS STEAKHOUSE","TIM HORTONS","STARBUCKS", "LUNCHBOX","Wild Wing ", "THE ALLEY","GYUBEE","RED LOBSTER", 'MENCHIE',"SQ *PANCHO'S ", "DAOL" , "SOUL STONE","MR. PRETZEL","METROPOLITAIN",
+                    "St. Louis Bar","Bagel","COCO FRESH TEA ","LE ST LAURENT","MAVERICK'S",'POPEYES', "Chatime ",'SHAKER',"MARY BROWN'S","SUSHI KAN","MANDARIN", "SHOPPERS",
              "WENDY'S", 'LE MIEN',"JOLLIBEE-","MOXIES","T&T","AZTEC","GREEN FRESH","TEALIVE","BOSTON PIZZA","EAST SIDE MARIO",
-            "Pizza Pizza ",'THE GREAT CANADIAN PO', 'UBER EATS ', 'BIG BONE BBQ',],
-        "Clothing": ["Tip Top","SPORT CHEK", "FAIRWEATHER","THREADS TAILORS","Shoe Company",'SP JOJIKA','SHEIN',"VALUE VILLAGE","OVO","BOATHOUSE","LEZE THE LABEL"],
+            "Pizza Pizza ",'THE GREAT CANADIAN PO','Carleton Web', 'UBER EATS ', 'BIG BONE BBQ',],
+        "Clothing": ["Tip Top","SPORT CHEK",'WINNERS','ADIDAS','SPORTS', 'OLD NAVY',"THE GAP","FAIRWEATHER","THREADS TAILORS","Shoe Company",'SP JOJIKA','SHEIN',"VALUE VILLAGE","OVO","BOATHOUSE","LEZE THE LABEL"],
 
         "Entertainment": [
+            "DOOLY'S OTTAWA INC. OTTAWA ON",
+            "DISNEYPLUS",
             "GOLF",
+            "FALCON RIDGE",
             "PUTTING EDGE",
             "NORDIK",
             "TEE 2 GREEN",
@@ -55,22 +59,26 @@ categories = {
             'RED DRAGON',
             "VRADVENTURES.ZONE ",
             'VR ADVENTURES.ZONE',
+            "EVENTBRITE",
             "TCGPLAYER ",
             'TCGPLAYER.COM',
-            "401 GAMES"
+            "401 GAMES",
+         "Wtbmatters"
   
         ],
         "Car Loan":["Loan Payment","BANK STREET MAZDA"],
+        "Car Maintenance":["OIL CHANGERS","Caps Auto","CARLING TIRE "],
+        "Travel":["Airlines ","FLIGHTHUB","AIRBNB",'AIRCANADA'],
 
-        "Car Insurance":["BELAIR INS/ASS"],
-        "Online Shopping":["LEGO","JEWELLERS"],
+        "Car Insurance":["BELAIR INS/ASS","BELAIRDIRECT"],
+        "Online Shopping":["LEGO","JEWELLERS","HIVEMAPPER","MY USADDRESS","AFROBLAST","SIMPLYMODBOX"],
         'Transporation':[ "Uber ","Lyft",'PRESTO',"PPARK","BUSBUD"],
-        "Doctors/dental/vision":["APPLE'S CROWN",'ACE OF SPADES',"CLEARVIEW","KITS","Echo"],
+        "Doctors/dental/vision":["APPLE'S CROWN",'ACE OF SPADES',"CLEARVIEW","KITS","Echo","LASIK MD","PHYSIO"],
         "Personal Care":["CLORE","MONTEGO","MONAT","NANCY'S NAILS AND LASHE","BATH & BODY WORKS"],
-        "Gym":   [ "SHOWCASE ","SP CROSSROPE",'FIT4LESS'],
-        "Home goods": ["AMZN", "APPLE","Dollarama","PANDABUY","BEST BUY","DOLLAR TREE","GIANT TIGER","CDN TIRE","HUDSON'S BAY",'AMAZON','WAL-MART'],
+        "Gym":   [ "SHOWCASE ","SP CROSSROPE",'FIT4LESS', "OTTAWACITY"],
+        "Home goods": ["AMZN", "APPLE","QUICK PICK","Dollarama","PANDABUY","BEST BUY","DOLLAR TREE","GIANT TIGER","CDN TIRE","HUDSON'S BAY",'AMAZON','WAL-MART'],
         'Income':['Basic Pay','Acting / Appointment Pay'],
-        'Gas':['PIONEER',"ULTRAMAR",'CIRCLEK',"MACEWEN","MOBIL","GAS","PETROCAN", 'MRGAS','ESSO','SHELL',"FUEL","PETRO"],
+        'Gas':['PIONEER',"ULTRAMAR",'CIRCLEK',"MACEWEN","MOBIL","GAS","PETROCAN", 'MRGAS','ESSO','SHELL',"MAC EWEN ","FUEL","PETRO"],
         'Church':["CALVARY CHURCH"],
         'Education':["OPTIONS"],
         "Miscellaneous Payement": [
@@ -79,8 +87,18 @@ categories = {
         ],
         "Miscellaneous Charges": [
             "PARKSMART",
+            "IMPARK00110003U",
             'MONTHLY FEES',
             "Dishonoured Payment",
+            "PAYBYPHONE",
+            "NSF ",
+            "PARKING",
+            "INDIGO PARK",
+            "HOTEL PONTIAC",
+            "Place D'orlans",
+            "NCC- VINCENT MASSEY PA "
+            ,"Opl/Bpo",
+
             "PREMIUM"
          
         ]
@@ -91,6 +109,9 @@ def loadList():
     parsers.append(americianExpressParser)
     parsers.append(CBSAPayHistory)
     parsers.append(tangerineParser)
+    parsers.append(simpliCreditParser)
+
+    parsers.append(wealthSimple)
     return parsers
 
 
@@ -131,8 +152,16 @@ def parse():
     df[MODEL_DESCRIPTION] = df[MODEL_DESCRIPTION].str.strip()
     df[MODEL_DATE] = pd.to_datetime(df[MODEL_DATE] ) 
     #fitler by 2023
-    df = df[df[MODEL_DATE].dt.year == 2023]
+    df = df[df[MODEL_DATE].dt.year ==  YEAR]
+   
+    items = df.to_dict(orient='records')
+
     parseTranscationsCatogeryByMonth(df)
+    output= 'output.xlsx'
+    log.info("Saving results to "+ output)
+    df.to_excel(output, index=True)
+
+    log.info("The results of the unknown records :")
     viewUnknownRecords(df)
 
    
@@ -185,17 +214,32 @@ def parseExpenseCatogeryByMonth(df):
 
 
 def parseTranscationsCatogeryByMonth(df):
+    # Assuming MODEL_CATEGORY, MODEL_DATE, and MODEL_AMOUNT are defined elsewhere
+    #assume that data has only one year of data
     
-
     # Group the data by month, year, and category, and sum the 'Amount' column
     expense_by_month_year = df.groupby([
         MODEL_CATEGORY,
-        df[MODEL_DATE].dt.year,
         df[MODEL_DATE].dt.strftime('%B')  # Format the month as "Month"
     ])[MODEL_AMOUNT].sum()
-    # print the aggregated income by month and year
-
+    
+    # Print the aggregated income by month and year
     printResults(expense_by_month_year)
+    
+    # Convert the grouped data to a DataFrame
+    expense_by_month_year_df = expense_by_month_year.reset_index()
+    pivot_df = expense_by_month_year_df.pivot_table(index=MODEL_CATEGORY, columns=[ MODEL_DATE], values=MODEL_AMOUNT, aggfunc='sum')
+    
+    # Convert negative values to positive
+    pivot_df = pivot_df.abs()
+
+    # Reorder the columns based on the chronological order of months
+    months_order = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
+    pivot_df = pivot_df.reindex(columns=months_order, level=0)
+
+    # Save the pivoted DataFrame to an Excel file
+    pivot_df.to_excel('expense_by_month_year.xlsx')
+
 
 def parseExpenseCategoryByYear(df):
 
