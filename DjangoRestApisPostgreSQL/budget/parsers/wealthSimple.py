@@ -166,8 +166,16 @@ def convertToModels(df):
     cleaned_df = new_df.dropna(subset=[MODEL_AMOUNT])
 
     print("Cleaned DataFrame:")
-    print(cleaned_df)
+    print(cleaned_df) 
 
+
+
+
+
+
+
+
+    
     return cleaned_df
 
 if __name__ == "__main__":

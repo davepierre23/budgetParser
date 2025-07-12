@@ -10,6 +10,9 @@ import simpliCreditParser
 import CBSAPayHistory
 import tangerineParser
 import wealthSimple
+import calendar
+import wiseParser
+
 
 # Configuration
 log.basicConfig(format="%(message)s", level=log.INFO)
@@ -22,7 +25,7 @@ MODEL_AMOUNT = "Amount"
 MODEL_ORIGIN = "Origin"
 MODEL_CATEGORY = "Category"
 
-YEAR = 2024
+YEAR = 2025
 
 # Define categories based on keywords in the "Description" column
 
@@ -119,6 +122,7 @@ def load_parsers():
         tangerineParser,
         simpliCreditParser,
         wealthSimple,
+        wiseParser
     ]
 
 
@@ -217,13 +221,183 @@ def yearly_summary(df):
 
     log.info("Yearly summary with totals and net savings saved to 'yearly_summary.xlsx'.")
 
+def load_data():
+    if os.path.exists(WORK_FILE):
+        df = pd.read_csv(WORK_FILE)
+    else:
+        log.error("Data file not found!")
+        return None
+
+    df[MODEL_DATE] = pd.to_datetime(df[MODEL_DATE])
+    df = df[df[MODEL_DATE].dt.year == YEAR]
+    return df
+
+def add_categories(df):
+    df[MODEL_CATEGORY] = df.apply(categorize, axis=1)
+    return df
+def calculate_metrics(df):
+    # Total income and expenses
+    total_income = df[df[MODEL_AMOUNT] > 0][MODEL_AMOUNT].sum()
+    total_expense = df[df[MODEL_AMOUNT] < 0][MODEL_AMOUNT].sum()
+    net_savings = total_income + total_expense
+
+    # Monthly metrics
+    monthly_expense = df[df[MODEL_AMOUNT] < 0].groupby(df[MODEL_DATE].dt.month)[MODEL_AMOUNT].sum()
+    monthly_expense_by_category = df[df[MODEL_AMOUNT] < 0].groupby([df[MODEL_DATE].dt.month, MODEL_CATEGORY])[MODEL_AMOUNT].sum()
+
+    # Largest and smallest spending months
+    largest_spending_month =monthly_expense.idxmax() 
+    smallest_spending_month = monthly_expense.idxmin()
+
+    # Fun facts
+    biggest_splurge = df[df[MODEL_AMOUNT] < 0][MODEL_AMOUNT].min()
+    smallest_purchase = df[df[MODEL_AMOUNT] < 0][MODEL_AMOUNT].max()
 
 
-def parse():
-    """Main parsing function."""
-    df = process_files()
-    yearly_summary(df)
+    
+    # Find the most frequent vendor
+    most_frequent_vendor = df[MODEL_DESCRIPTION].value_counts().idxmax()
 
+    # Filter rows for the most frequent vendor
+    vendor_rows = df[df[MODEL_DESCRIPTION] == most_frequent_vendor]
+
+    # Calculate the total value spent on this vendor
+    total_spent_on_vendor = vendor_rows[MODEL_AMOUNT].sum()
+
+    # Print the results
+    print(f"Total amount spent on {most_frequent_vendor}: {total_spent_on_vendor}")
+
+
+      # Largest and smallest spending month
+    monthly_expenses = df[df[MODEL_AMOUNT] < 0].groupby(df[MODEL_DATE].dt.month)[MODEL_AMOUNT].sum()
+    largest_month = monthly_expenses.idxmin()
+    smallest_month = monthly_expenses.idxmax()
+    largest_month_spending = monthly_expenses.min()
+    smallest_month_spending = monthly_expenses.max()
+
+    # Convert to month names
+    largest_month_name = calendar.month_name[largest_month]
+    smallest_month_name = calendar.month_name[smallest_month]
+
+    print(f"Largest Spending Month: {largest_month_name} with total spending of ${largest_month_spending:.2f}")
+    print(f"Smallest Spending Month: {smallest_month_name} with total spending of ${smallest_month_spending:.2f}")
+
+    # Biggest splurge
+    biggest_splurge_row = df[df[MODEL_AMOUNT] < 0].nsmallest(1, MODEL_AMOUNT).iloc[0]
+    biggest_splurge_description = biggest_splurge_row[MODEL_DESCRIPTION]
+    biggest_splurge_amount = biggest_splurge_row[MODEL_AMOUNT]
+
+    print(f"Biggest Splurge: {biggest_splurge_description} with an amount of ${abs(biggest_splurge_amount):.2f}")
+
+    expense_df = df[df[MODEL_AMOUNT] < 0]
+    income_df = df[df[MODEL_AMOUNT] > 0]
+
+    # 1. Top Spending Day
+    top_spending_day = expense_df.groupby(MODEL_DATE)[MODEL_AMOUNT].sum().idxmin()
+    top_spending_day_amount = expense_df.groupby(MODEL_DATE)[MODEL_AMOUNT].sum().min()
+    log.info(f"Top Spending Day: {top_spending_day.strftime('%B %d, %Y')} with total spending of ${abs(top_spending_day_amount):.2f}")
+
+    # 2. Best Month (Savings)
+    savings_by_month = df.groupby(df[MODEL_DATE].dt.strftime('%B'))[MODEL_AMOUNT].sum()
+    best_savings_month = savings_by_month.idxmax()
+    best_savings_amount = savings_by_month.max()
+    log.info(f"Best Month (Savings): {best_savings_month} with net savings of ${best_savings_amount:.2f}")
+
+    # 3. Most Consistent Category
+    consistent_categories = expense_df.groupby(MODEL_CATEGORY).nunique()[MODEL_DATE]
+    most_consistent_category = consistent_categories.idxmax()
+    log.info(f"Most Consistent Category: {most_consistent_category}")
+
+    # 4. Favorite Payment Method (if payment data exists)
+    if MODEL_ORIGIN in df.columns:
+        favorite_payment_method = df[MODEL_ORIGIN].value_counts().idxmax()
+        log.info(f"Favorite Payment Method: {favorite_payment_method}")
+
+    # 5. Longest No-Spend Streak
+    no_spend_streak = (expense_df[MODEL_DATE].diff().dt.days > 1).astype(int).cumsum()
+    longest_streak_days = no_spend_streak.value_counts().max()
+    log.info(f"Longest No-Spend Streak: {longest_streak_days} days")
+
+    # 6. "You Could Have Saved"
+    non_essential_categories = ['Entertainment', 'Restaurents']
+    non_essential_spending = expense_df[expense_df[MODEL_CATEGORY].isin(non_essential_categories)][MODEL_AMOUNT].sum()
+    potential_savings = non_essential_spending * 0.10
+    log.info(f"You Could Have Saved: ${abs(potential_savings):.2f} by reducing non-essential spending by 10%.")
+
+    # 7. Impulse Purchase Highlight
+    impulse_category = 'Entertainment'
+    impulse_purchases = expense_df[expense_df[MODEL_CATEGORY] == impulse_category]
+    if not impulse_purchases.empty:
+        top_impulse_purchase = impulse_purchases.loc[impulse_purchases[MODEL_AMOUNT].idxmin()]
+        log.info(f"Impulse Purchase Highlight: {top_impulse_purchase[MODEL_DESCRIPTION]} for ${abs(top_impulse_purchase[MODEL_AMOUNT]):.2f}")
+
+    # 8. Spending Efficiency
+    total_income = income_df[MODEL_AMOUNT].sum()
+    total_expense = abs(expense_df[MODEL_AMOUNT].sum())
+    savings_ratio = (total_income - total_expense) / total_income * 100
+    log.info(f"Spending Efficiency: {savings_ratio:.2f}% of your income was saved.")
+
+
+      # 9. Top 3 Vendors
+    top_vendors = expense_df[MODEL_DESCRIPTION].value_counts().head(3)
+    log.info("Top 3 Vendors:")
+    for vendor, count in top_vendors.items():
+        total_spent = expense_df[expense_df[MODEL_DESCRIPTION] == vendor][MODEL_AMOUNT].sum()
+        log.info(f"- {vendor}: {count} transactions, Total Spent: ${abs(total_spent):.2f}")
+
+    # 10. Month-on-Month Change
+    expense_by_month = expense_df.groupby(expense_df[MODEL_DATE].dt.to_period('M'))[MODEL_AMOUNT].sum()
+    month_on_month_change = expense_by_month.pct_change() * 100
+    log.info("Month-on-Month Change in Expenses:")
+    for month, change in month_on_month_change.items():
+        if pd.notna(change):
+            log.info(f"- {month}: {change:.2f}%")
+
+
+
+
+    return {
+        "total_income": total_income,
+        "total_expense": total_expense,
+        "net_savings": net_savings,
+        "monthly_expense": monthly_expense,
+        "monthly_expense_by_category": monthly_expense_by_category,
+        "largest_spending_month": largest_spending_month,
+        "smallest_spending_month": smallest_spending_month,
+        "biggest_splurge": biggest_splurge,
+        "smallest_purchase": smallest_purchase,
+        "most_frequent_vendor": most_frequent_vendor
+    }
+
+
+  
+
+def print_wrapup(metrics):
+    log.info("\nYour 2024 Financial Wrapped")
+    log.info(f"💸 Total Spent: ${-metrics['total_expense']:.2f}")
+    log.info(f"💰 Total Income: ${metrics['total_income']:.2f}")
+    log.info(f"📈 Net Savings: ${metrics['net_savings']:.2f}")
+    log.info(f"📅 Largest Spending Month: {metrics['largest_spending_month']}")
+    log.info(f"📅 Smallest Spending Month: {metrics['smallest_spending_month']}")
+    log.info(f"🎯 Biggest Splurge: ${-metrics['biggest_splurge']:.2f}")
+    log.info(f"☕ Most Frequent Vendor: {metrics['most_frequent_vendor']}")
+
+def save_monthly_expense_by_category(metrics):
+    pivot_df = metrics['monthly_expense_by_category'].unstack().fillna(0)
+    pivot_df.to_excel('monthly_expense_by_category.xlsx')
+
+
+def main():
+    df = load_data()
+    if df is None:
+        return
+
+    df = add_categories(df)
+    metrics = calculate_metrics(df)
+    print_wrapup(metrics)
+    save_monthly_expense_by_category(metrics)
 
 if __name__ == "__main__":
-    parse()
+    process_files()
+    #main()
+

@@ -113,12 +113,12 @@ def populateData(ws):
 
 #must be '%Y-%m-%d' to save in datbase
 def convertDate(date="11 Jan 2022"):
-    return datetime.datetime.strptime(date, '%d %b %Y').strftime('%Y-%m-%d')
+    return datetime.datetime.strptime(date.replace(".", ""), '%d %b %Y').strftime('%Y-%m-%d')
 
 
 def createRow(row,ws,transactonDescriptCol) :
     transactonDateCol=1
-    amountCol=4
+    amountCol=5
 
 
     PAYEMENT = "P"
