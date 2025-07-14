@@ -12,7 +12,10 @@ import pandas as pd
 import logging as log
 logging.basicConfig(format='%(message)s', level=logging.INFO)
 
-DATA_DIR = "/Users/davepierre/Documents/Projects/budgetParser/data"
+from pathlib import Path
+
+# Absolute path, raw string style:
+DATA_DIR = r"C:\Users\davep\Documents\budget\DjangoRestApisPostgreSQL\budget\data"
 DATE='Date'
 AMOUNT='Amount'
 DESCRIPTION = 'Description'
@@ -195,18 +198,23 @@ def main(name):
         fileName = name
     df =parse(name)
   
-
-
-
-    
-
-
 def parse(name=""):
-    
-    ws, fileName = convertFile(name)
-    data= populateData(ws)
-    os.remove(fileName)
+    """
+    Parses the given file by converting it, populating data from the worksheet,
+    and optionally removing the temporary file.
+    """
+    ws, file_name = convertFile(name)
+    data = populateData(ws)
+
+    # Optional: Remove the temporary file if it exists
+    try:
+        if os.path.exists(file_name):
+            os.remove(file_name)
+    except Exception as e:
+        print(f"Warning: Could not delete temp file '{file_name}': {e}")
+
     return data
+
 
 if __name__ == "__main__":
      main(DATA_DIR+"/Summary.xls")

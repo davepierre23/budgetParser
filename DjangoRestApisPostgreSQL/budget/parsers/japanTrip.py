@@ -2,24 +2,44 @@ import pandas as pd
 import os
 import logging as log
 
-log.basicConfig(format='%(message)s', level=log.INFO)
+log.basicConfig(format="%(message)s", level=log.INFO)
 
-MODEL_DATE = 'Date'
-MODEL_DESCRIPTION = 'Description'
-MODEL_AMOUNT = 'Amount'
-MODEL_ORIGIN = 'Origin'
-MODEL_CATEGORY = 'Category'
-WORK_FILE = 'my_data.csv'
-OUTPUT_FILE = 'japan_trip.csv'
+# ── column names (same as your current model) ───────────────────────────────────
+MODEL_DATE        = "Date"
+MODEL_DESCRIPTION = "Description"
+MODEL_AMOUNT      = "Amount"
+MODEL_ORIGIN      = "Origin"
+MODEL_CATEGORY    = "Category"
+MODEL_TRIP        = "Trip"          # NEW column
 
-TRIP_START = pd.to_datetime("2025-03-21")
-TRIP_END = pd.to_datetime("2025-04-08")
+WORK_FILE   = "my_data.csv"         # master data file
+MASTER_OUT  = "all_trips_tagged.csv"  # combined output
 
-JAPAN_KEYWORDS = [
-    "Suica", "FamilyMart", "7-Eleven", "Don Quijote", "Tokyo", "Osaka", "Kyoto", "Lawson",
-    "JPY", "Yen", "Japan", "Kansai", "Narita", "Shinkansen", "IC Card", "IC fare", "JR", "Pasmo"
-]
+# ── trip definitions (extend freely) ────────────────────────────────────────────
+TRIPS = {
+    "Japan 2025": {
+        "start": "2025-03-21",
+        "end":   "2025-04-08",
+        "keywords": [
+            "Suica", "FamilyMart", "7-Eleven", "Don Quijote", "Tokyo",
+            "Osaka", "Kyoto", "Lawson", "Shinkansen", "JR", "Pasmo",
+            "JRC", "Megadonquijote", "Teamlab", "Radical Tokyo"
+        ],
+        "outfile": "japan_trip.csv"
+    },
+    "LA 2025": {
+        "start": "2025-03-17",
+        "end":   "2025-03-25",
+        "keywords": [
+            "Crypto Arena", "Moxy", "The Hoxton", "Uber", "Caltrain",
+            "Swimply", "Anchor Night Club", "Radical Tokyo Los Angeles",
+            "Guest Services Of", "LAX", "Los Angeles"
+        ],
+        "outfile": "la_trip.csv"
+    },
+}
 
+# ── your existing look‑ups (shortened here for brevity) ─────────────────────────
 categories = {
     "Transport": [
         "Suica", "Radical Tokyo", "Puraudeko", "Train", "IC fare", "Transit","Subway", "Deiri-Yamazaki",
@@ -57,65 +77,69 @@ vendor_normalization = {
     "Glanta Kyoto Ninenzaka": "Glanta Kyoto",
     "Nishinari-Ku Osaka-Shi": "Nine Hours Osaka",
 }
+# ── helpers ─────────────────────────────────────────────────────────────────────
+def in_trip(desc, keywords):
+    """Return True if any keyword occurs in description (case‑insensitive)."""
+    desc_low = desc.lower()
+    return any(k.lower() in desc_low for k in keywords)
 
-def is_japan_trip(description):
-    return any(keyword.lower() in description.lower() for keyword in JAPAN_KEYWORDS)
-
-def categorize(description):
-    for category, keywords in categories.items():
-        if any(keyword.lower() in description.lower() for keyword in keywords):
-            return category
+def categorize_row(desc):
+    for cat, words in categories.items():
+        if any(w.lower() in desc.lower() for w in words):
+            return cat
     return "Other"
 
-def filter_and_analyze_japan_trip():
+# ── core pipeline ──────────────────────────────────────────────────────────────
+def add_trip_tags(df: pd.DataFrame) -> pd.DataFrame:
+    """Add a 'Trip' column based on TRIPS dict; leave blank if non‑trip row."""
+    df[MODEL_TRIP] = ""         # start empty
+    for trip_name, meta in TRIPS.items():
+        mask = (
+            (df[MODEL_DATE] >= pd.to_datetime(meta["start"])) &
+            (df[MODEL_DATE] <= pd.to_datetime(meta["end"]))   &
+            (df[MODEL_DESCRIPTION].apply(in_trip, args=(meta["keywords"],)))
+        )
+        df.loc[mask, MODEL_TRIP] = trip_name
+    return df
+
+def main():
     if not os.path.exists(WORK_FILE):
         log.error("CSV data file not found!")
         return
 
+    # 1. Load & clean ----------------------------------------------------------------
     df = pd.read_csv(WORK_FILE)
     df[MODEL_DATE] = pd.to_datetime(df[MODEL_DATE])
     df[MODEL_DESCRIPTION] = df[MODEL_DESCRIPTION].astype(str).str.strip()
 
-    # Filter by date range, keywords, and origin
-    trip_df = df[
-        (df[MODEL_DATE] >= TRIP_START) &
-        (df[MODEL_DATE] <= TRIP_END) &
-        (df[MODEL_DESCRIPTION].apply(is_japan_trip)) 
-    ]
+    # 2. Normalize vendor names -------------------------------------------------------
+    df[MODEL_DESCRIPTION] = df[MODEL_DESCRIPTION].replace(vendor_normalization)
 
-    if trip_df.empty:
-        log.info("No Japan trip transactions found.")
-        return
+    # 3. Categorize every row (if not already done) -----------------------------------
+    if MODEL_CATEGORY not in df.columns or df[MODEL_CATEGORY].isna().all():
+        df[MODEL_CATEGORY] = df[MODEL_DESCRIPTION].apply(categorize_row)
 
-    # Normalize vendor names
-    trip_df[MODEL_DESCRIPTION] = trip_df[MODEL_DESCRIPTION].replace(vendor_normalization)
+    # 4. Tag trips --------------------------------------------------------------------
+    df = add_trip_tags(df)
 
-    # Categorize and sort
-    trip_df[MODEL_CATEGORY] = trip_df[MODEL_DESCRIPTION].apply(categorize)
-    trip_df = trip_df.sort_values(by=[MODEL_CATEGORY, MODEL_DATE])
+    # 5. Save a single master file ----------------------------------------------------
+    df.to_csv(MASTER_OUT, index=False)
+    log.info(f"All data with trip tags saved to: {MASTER_OUT}")
 
-    # Save to CSV
-    trip_df.to_csv(OUTPUT_FILE, index=False)
-    log.info(f"Japan trip transactions saved to: {OUTPUT_FILE}")
+    # 6. Optional: split per trip -----------------------------------------------------
+    for trip_name, meta in TRIPS.items():
+        trip_rows = df[df[MODEL_TRIP] == trip_name]
+        if trip_rows.empty:
+            log.info(f"No transactions found for «{trip_name}».")
+            continue
 
-    # Summary logs
-    log.info("=== Japan Trip Spending Summary (WISE only) ===")
-    total_spent = trip_df[trip_df[MODEL_AMOUNT] < 0][MODEL_AMOUNT].sum()
-    log.info(f"Total Spent in Japan: ${abs(total_spent):.2f}")
+        outfile = meta["outfile"]
+        trip_rows.to_csv(outfile, index=False)
+        log.info(f"{trip_name}: {len(trip_rows)} rows ➜ {outfile}")
 
-    log.info("Top Vendors (with total spent):")
-    top_vendors = trip_df.groupby(MODEL_DESCRIPTION).agg(
-        Transactions=('Amount', 'count'),
-        TotalSpent=('Amount', lambda x: abs(x[x < 0].sum()))
-    ).sort_values(by='Transactions', ascending=False).head(3)
-
-    for vendor, row in top_vendors.iterrows():
-        log.info(f" - {vendor}: {row['Transactions']} transactions, ${row['TotalSpent']:.2f} spent")
-
-    log.info("Spending Breakdown by Category:")
-    category_totals = trip_df.groupby(MODEL_CATEGORY)[MODEL_AMOUNT].sum()
-    for cat, amt in category_totals.items():
-        log.info(f" - {cat}: ${abs(amt):.2f}")
+        # Quick summary
+        spent = trip_rows[trip_rows[MODEL_AMOUNT] < 0][MODEL_AMOUNT].sum()
+        log.info(f"   → total spent: ${abs(spent):.2f}\n")
 
 if __name__ == "__main__":
-    filter_and_analyze_japan_trip()
+    main()

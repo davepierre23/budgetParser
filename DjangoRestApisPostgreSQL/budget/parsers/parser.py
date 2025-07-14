@@ -12,11 +12,13 @@ import tangerineParser
 import wealthSimple
 import calendar
 import wiseParser
+from pathlib import Path
 
+# Absolute path, raw string style:
+DATA_DIR = r"C:\Users\davep\Documents\budget\DjangoRestApisPostgreSQL\budget\data"
 
 # Configuration
 log.basicConfig(format="%(message)s", level=log.INFO)
-DATA_DIR = "/Users/davepierre/Documents/Projects/budgetParser/data"
 WORK_FILE = "my_data.csv"
 
 MODEL_DATE = "Date"
@@ -30,88 +32,112 @@ YEAR = 2025
 # Define categories based on keywords in the "Description" column
 
 categories = {
-        "Wealthsimple":["Wealthsimple"],
-        "Alcohol": ["LCBO/RAO","PURE BREW"],
-        "Groceries":["TooGoodT ",'FLASHFOOD','HALIBUT HOUSE ','WALMART.CA','FRESHCO',"BULK BARN","DUNKIN", "REVOLUTIONN","NO FRILLS", 'FOOD BASICS',"METRO","SOBEYS","LOBLAWS","WAL*MART","NSEYA'S","Shoppers Drug Mart","FARM BOY","REXALL",],
-        "Restaurents": [ "MIKE DEAN'S","Cafe","LITTLE CAESARS","ROYAL OAK","BOOSTER JUICE ",'CORA',"HALIBUT",'TIPIKLIZ','HARVEY','LEVEL ONE',"DAIRY QUEEN","SHOELESS JOES", "Subway","FOOD",'PITA BELL KABAB', "Chances",'SHAWARMA PALACE', 'WENDYS', 'LOUIS', "JONNY CANUCK'S", 'CAFÉ LATTE', 'NOM NOM', 'PRESOTEA', 'HEY KITCHEN', 'MEZZANOTTE', 'A&W',"BAKERY","DOUGHNUTS","JACK ASTOR'S","MCDONALD'S","DOORDASH","Seoul Dog","PIZZERIA",'FAIRMONT CHATEAU LAURIE ',"COBS BREAD","MILKMAN ","SUSHI","BRIG","LEXINGTON SMOKEHOUSE",'CHICK-FIL-A' ,"KFC","FRUIT","BROADWAY","DELICIOUS STEAKHOUSE","TIM HORTONS","STARBUCKS", "LUNCHBOX","Wild Wing ", "THE ALLEY","GYUBEE","RED LOBSTER", 'MENCHIE',"SQ *PANCHO'S ", "DAOL" , "SOUL STONE","MR. PRETZEL","METROPOLITAIN",
-                    "St. Louis Bar","Bagel","COCO FRESH TEA ","LE ST LAURENT","MAVERICK'S",'POPEYES', "Chatime ",'SHAKER',"MARY BROWN'S","SUSHI KAN","MANDARIN", "SHOPPERS",
-             "WENDY'S", 'LE MIEN',"JOLLIBEE-","MOXIES","T&T","AZTEC","GREEN FRESH","TEALIVE","BOSTON PIZZA","EAST SIDE MARIO",
-            "Pizza Pizza ",'THE GREAT CANADIAN PO','Carleton Web', 'UBER EATS ', 'BIG BONE BBQ',],
-        "Clothing": ["Tip Top","SPORT CHEK",'WINNERS','ADIDAS','SPORTS', 'OLD NAVY',"THE GAP","FAIRWEATHER","THREADS TAILORS","Shoe Company",'SP JOJIKA','SHEIN',"VALUE VILLAGE","OVO","BOATHOUSE","LEZE THE LABEL"],
+    "Wealthsimple": ["Wealthsimple"],
+    
+    "Alcohol": ["LCBO/RAO", "PURE BREW"],
 
-        "Entertainment": [
-            "DOOLY'S OTTAWA INC. OTTAWA ON",
-            "DISNEYPLUS",
-            "GOLF",
-            "FALCON RIDGE",
-            "PUTTING EDGE",
-            "NORDIK",
-            "TEE 2 GREEN",
-            "DOLLYS",
-            "STEAM",
-            "PHD IN WAVES",
-            "CALYPSO",
-            "TICKET",
-            "SMASH ROOM",
-            "LANDMARK",
-            "WHITE SANDS",
-            "Orleans Bowling.com",
-            "BOWLING",
-            "Top Karting Hull",
-            "Sunrise Records",
-            "SP TSX1",
-            'eBay',
-            'GAMESTOP',
-            "CARTA",
-            'Canada Computers',
-            'PLAYSTATION',
-            'RED DRAGON',
-            "VRADVENTURES.ZONE ",
-            'VR ADVENTURES.ZONE',
-            "EVENTBRITE",
-            "TCGPLAYER ",
-            'TCGPLAYER.COM',
-            "401 GAMES",
-         "Wtbmatters"
-  
-        ],
-        "Car Loan":["Loan Payment","BANK STREET MAZDA"],
-        "Car Maintenance":["OIL CHANGERS","Caps Auto","CARLING TIRE "],
-        "Travel":["Airlines ","FLIGHTHUB","AIRBNB",'AIRCANADA'],
+    "Groceries": [
+        "TooGoodT", "FLASHFOOD", "HALIBUT HOUSE", "WALMART.CA", "FRESHCO", "BULK BARN", "DUNKIN",
+        "REVOLUTIONN", "NO FRILLS", "FOOD BASICS", "METRO", "SOBEYS", "LOBLAWS", "WAL*MART", "CHAP CHAP SNACKS Ottawa",
+        "NSEYA'S", "Shoppers Drug Mart", "FARM BOY", "REXALL", "YIG", "T&T", "CANADIAN TIRE"
+    ],
 
-        "Car Insurance":["BELAIR INS/ASS","BELAIRDIRECT"],
-        "Online Shopping":["LEGO","JEWELLERS","HIVEMAPPER","MY USADDRESS","AFROBLAST","SIMPLYMODBOX"],
-        'Transporation':[ "Uber ","Lyft",'PRESTO',"PPARK","BUSBUD"],
-        "Doctors/dental/vision":["APPLE'S CROWN",'ACE OF SPADES',"CLEARVIEW","KITS","Echo","LASIK MD","PHYSIO"],
-        "Personal Care":["CLORE","MONTEGO","MONAT","NANCY'S NAILS AND LASHE","BATH & BODY WORKS"],
-        "Gym":   [ "SHOWCASE ","SP CROSSROPE",'FIT4LESS', "OTTAWACITY"],
-        "Home goods": ["AMZN", "APPLE","QUICK PICK","Dollarama","PANDABUY","BEST BUY","DOLLAR TREE","GIANT TIGER","CDN TIRE","HUDSON'S BAY",'AMAZON','WAL-MART'],
-        'Income':['Basic Pay','Acting / Appointment Pay'],
-        'Gas':['PIONEER',"ULTRAMAR",'CIRCLEK',"MACEWEN","MOBIL","GAS","PETROCAN", 'MRGAS','ESSO','SHELL',"MAC EWEN ","FUEL","PETRO"],
-        'Church':["CALVARY CHURCH"],
-        'Education':["OPTIONS"],
-        "Miscellaneous Payement": [
-            "Returned Payment",
-            'REFUNDED'
-        ],
-        "Miscellaneous Charges": [
-            "PARKSMART",
-            "IMPARK00110003U",
-            'MONTHLY FEES',
-            "Dishonoured Payment",
-            "PAYBYPHONE",
-            "NSF ",
-            "PARKING",
-            "INDIGO PARK",
-            "HOTEL PONTIAC",
-            "Place D'orlans",
-            "NCC- VINCENT MASSEY PA "
-            ,"Opl/Bpo",
+    "Restaurants": [
+        "MIKE DEAN'S", "Cafe", "LITTLE CAESARS", "ROYAL OAK", "BOOSTER JUICE", "CORA", "HALIBUT",
+        "TIPIKLIZ", "HARVEY", "LEVEL ONE", "DAIRY QUEEN", "SHOELESS JOES", "Subway", "FOOD",
+        "PITA BELL KABAB", "Chances", "SHAWARMA PALACE", "WENDYS", "LOUIS", "JONNY CANUCK'S",
+        "CAFÉ LATTE", "NOM NOM", "PRESOTEA", "HEY KITCHEN", "MEZZANOTTE", "A&W", "BAKERY",
+        "DOUGHNUTS", "JACK ASTOR'S", "MCDONALD'S", "DOORDASH", "Seoul Dog", "PIZZERIA",
+        "FAIRMONT CHATEAU LAURIE", "COBS BREAD", "MILKMAN", "SUSHI", "BRIG", "LEXINGTON SMOKEHOUSE",
+        "CHICK-FIL-A", "KFC", "FRUIT", "BROADWAY", "DELICIOUS STEAKHOUSE", "TIM HORTONS",
+        "STARBUCKS", "LUNCHBOX", "Wild Wing", "THE ALLEY", "GYUBEE", "RED LOBSTER", "MENCHIE",
+        "SQ *PANCHO'S", "DAOL", "SOUL STONE", "MR. PRETZEL", "METROPOLITAIN", "St. Louis Bar",
+        "Bagel", "COCO FRESH TEA", "LE ST LAURENT", "MAVERICK'S", "POPEYES", "Chatime", "SHAKER",
+        "MARY BROWN'S", "SUSHI KAN", "MANDARIN", "SHOPPERS", "LE MIEN", "JOLLIBEE-", "MOXIES",
+        "AZTEC", "GREEN FRESH", "TEALIVE", "BOSTON PIZZA", "EAST SIDE MARIO", "Pizza Pizza",
+        "THE GREAT CANADIAN PO", "Carleton Web", "UBER EATS", "BIG BONE BBQ","SKIPTHEDISHES"
+    ],
 
-            "PREMIUM"
-         
-        ]
-    }
+    "Clothing": [
+        "Tip Top", "SPORT CHEK", "WINNERS", "ADIDAS", "SPORTS", "OLD NAVY", "THE GAP",
+        "FAIRWEATHER", "THREADS TAILORS", "Shoe Company", "SP JOJIKA", "SHEIN", "VALUE VILLAGE",
+        "OVO", "BOATHOUSE", "LEZE THE LABEL"
+    ],
+
+    "Entertainment": [
+        "DOOLY'S OTTAWA INC. OTTAWA ON", "DISNEYPLUS", "GOLF", "FALCON RIDGE", "PUTTING EDGE",
+        "NORDIK", "TEE 2 GREEN", "DOLLYS", "STEAM", "PHD IN WAVES", "CALYPSO", "TICKET",
+        "SMASH ROOM", "LANDMARK", "WHITE SANDS", "Orleans Bowling.com", "BOWLING",
+        "Top Karting Hull", "Sunrise Records", "SP TSX1", "eBay", "GAMESTOP", "CARTA", "EB *ALL FALLS DOWN FIL TORONTO"
+        "Canada Computers", "PLAYSTATION", "RED DRAGON", "VRADVENTURES.ZONE", "VR ADVENTURES.ZONE",
+        "EVENTBRITE", "TCGPLAYER", "TCGPLAYER.COM", "401 GAMES", "Wtbmatters", "Monkey Kart","Entertain St991",
+        "Teamlab Planets Tokyo", "Crypto Arena Mercandise", "HIPSTER LASERS", "WEEB MANIA", "SWIMPLY","Anchor Night Club"
+    ],
+
+    "Car Loan": ["Loan Payment", "BANK STREET MAZDA"],
+
+    "Car Maintenance": ["OIL CHANGERS", "Caps Auto", "CARLING TIRE"],
+
+    "Travel": [
+        "Hopper",
+        "Airlines", "FLIGHTHUB", "AIRBNB", "Caltrain","AIRCANADA", "HOPPER", "KLOOK TRAVEL TECH", "KLOOK",
+        "JRC SHINKANSEN", "CALTRAIN", "MOXY DWNTN LOS ANGEL", "THE HOXTON", "GUEST SERVICES OF",
+        "JRC SMART EX TOKYO", "RADICAL TOKYO", "SEVEN-ELEVEN", "MEGADONQUIJOTE", "TEAMLAB PLANETS"
+    ],
+
+    "Travel": ["MOXY DWNTN LOS ANGEL", "AIRBnb" , "AIRCANADA", "AIRLINES","KLOOK","THE HOXTON", "FAIRMONT CHATEAU", "HOTEL PONTIAC", "AIRALO ", "CAA NORTH"],
+
+    "Subscriptions": ["DISNEYPLUS", "MEMBERSHIP FEE INSTALLMENT", "NETFLIX"],
+
+    "Car Insurance": ["BELAIR INS/ASS", "BELAIRDIRECT", "BELAIR"],
+
+    "Online Shopping": [
+        "LEGO", "JEWELLERS", "HIVEMAPPER", "MY USADDRESS", "AFROBLAST", "SIMPLYMODBOX",
+        "AMZN", "AMAZON", "APPLE", "SNAPLII" 
+    ],
+
+    "Transportation": [
+        "Uber", "Ubr*", "Lyft", "PRESTO", "PPARK", "BUSBUD","Mto Tsd ", "QP ORLEANS", "IMPARK", "PARKING"
+    ],
+
+    "Doctors/Dental/Vision": [
+        "APPLE'S CROWN", "ACE OF SPADES", "CLEARVIEW", "KITS", "Echo", "LASIK MD", "PHYSIO",
+        "HUNTER CHIROPRACTIC", "TENTH LINE PHARMACY"
+    ],
+
+    "Personal Care": [
+        "CLORE", "MONTEGO", "MONAT", "NANCY'S NAILS AND LASHE", "BATH & BODY WORKS"
+    ],
+
+    "Gym": ["SHOWCASE", "SP CROSSROPE", "FIT4LESS", "OTTAWACITY"],
+
+    "Home Goods": [
+        "QUICK PICK", "Dollarama", "PANDABUY", "BEST BUY", "DOLLAR TREE", "GIANT TIGER",
+        "CDN TIRE", "HUDSON'S BAY", "WAL-MART", "Kylescouter", "CANADIANTIRE"
+    ],
+
+    "Income": ["Basic Pay", "Acting / Appointment Pay"],
+
+    "Gas": [
+        "PIONEER", "ULTRAMAR", "CIRCLEK", "MACEWEN", "MOBIL", "GAS", "PETROCAN", "MRGAS",
+        "ESSO", "SHELL", "MAC EWEN", "FUEL", "PETRO"
+    ],
+
+    "Church": ["CALVARY CHURCH"],
+
+    "Education": ["OPTIONS", "R.I.S.E. ACADEMY", "The Aqua Life Swim Sch"],
+
+    "Miscellaneous Payment": [
+        "Returned Payment", "REFUNDED"
+    ],
+
+    "Miscellaneous Charges": [
+        "PARKSMART", "IMPARK00110003U", "MONTHLY FEES", "Dishonoured Payment", "PAYBYPHONE",
+        "NSF", "PARKING", "INDIGO PARK", "HOTEL PONTIAC", "Place D'orlans", "NCC- VINCENT MASSEY PA",
+        "Opl/Bpo", "PREMIUM"
+    ]
+}
+
 
 def load_parsers():
     """Load all parsers."""
@@ -130,7 +156,7 @@ def categorize(row):
     """Categorize transactions based on description."""
     for category, keywords in categories.items():
         for keyword in keywords:
-            if keyword.upper() in row[MODEL_DESCRIPTION].upper():
+            if keyword.upper()in row[MODEL_DESCRIPTION].upper():
                 return category
     return "Unknown"
 
@@ -373,7 +399,7 @@ def calculate_metrics(df):
   
 
 def print_wrapup(metrics):
-    log.info("\nYour 2024 Financial Wrapped")
+    log.info("\nYour 2025 Financial Wrapped")
     log.info(f"💸 Total Spent: ${-metrics['total_expense']:.2f}")
     log.info(f"💰 Total Income: ${metrics['total_income']:.2f}")
     log.info(f"📈 Net Savings: ${metrics['net_savings']:.2f}")
@@ -397,7 +423,28 @@ def main():
     print_wrapup(metrics)
     save_monthly_expense_by_category(metrics)
 
-if __name__ == "__main__":
-    process_files()
-    #main()
 
+
+
+def print_unknown_transactions(path):
+    """
+    Read a CSV, keep rows whose Category == 'Unknown', and
+    print Date, Description, Amount, Origin, Category.
+    """
+    df = pd.read_csv(path, dtype=str)          # ← read_csv, not read_excel
+    mask = df["Category"].str.lower().eq("unknown")
+    unknown_rows = df.loc[mask, ["Date", "Description", "Amount", "Origin", "Category"]]
+
+    if unknown_rows.empty:
+        print("✅ No transactions with Category = 'Unknown'.")
+    else:
+        print(unknown_rows.to_string(index=False))
+ 
+
+#
+
+if __name__ == "__main__":
+    process_files() 
+    main()
+
+    print_unknown_transactions(WORK_FILE)
