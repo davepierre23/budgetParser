@@ -1,10 +1,9 @@
 ﻿import pandas as pd
-from config import WORK_FILE, MODEL_DESCRIPTION, MODEL_CATEGORY
+from config import WORK_FILE, MODEL_DESCRIPTION, MODEL_CATEGORY, categories
 from processing import process_files
 from categorizer import Categorizer
 from parsers.ml_model import train_model, predict_unknowns
-#from reports import calculate_metrics, print_wrapup, save_monthly_expense_by_category
-from categories import categories
+from reports import FinancialReport
 
 def main():
     df = process_files()
@@ -18,10 +17,12 @@ def main():
     if model:
         df = predict_unknowns(df, model, vectorizer, MODEL_DESCRIPTION, MODEL_CATEGORY)
 
-    # Reporting
-    # metrics = calculate_metrics(df)
-    # print_wrapup(metrics)
-    # save_monthly_expense_by_category(metrics)
+
+    report = FinancialReport(df)
+    report.calculate_metrics()
+    report.yearly_summary()
+    report.save_monthly_by_category()
+    report.print_wrapup()
 
     # Save audit trail
     df.to_csv(WORK_FILE, index=False)

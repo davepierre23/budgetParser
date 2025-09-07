@@ -40,7 +40,7 @@ def combineTangerineSheets():
     # Write the combined data to a new Excel file
     combined_data.to_csv(OUTPUT_DIRECTORY+COMBINED_SHEET, index=False)
 def canParse(full_path):
-    return "4012914604.CSV"  in full_path
+    return "SIMPLII.csv"  in full_path
 def main(name):
 
     n = len(sys.argv)
