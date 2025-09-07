@@ -6,8 +6,6 @@ from config import DATA_DIR,WORK_FILE, MASTER_OUT, MODEL_DATE,  MODEL_AMOUNT,  M
 log.basicConfig(format="%(message)s", level=log.INFO)
 
 
-MASTER_OUT  = "all_trips_tagged.csv"  # combined output
-
 # ── trip definitions (extend freely) ────────────────────────────────────────────
 TRIPS = {
     "Japan 2025": {

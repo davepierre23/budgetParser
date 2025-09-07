@@ -1,11 +1,21 @@
 ﻿import pandas as pd
-from config import WORK_FILE, MODEL_DESCRIPTION, MODEL_CATEGORY, categories
+from config import WORK_FILE, EXPORT_DIR, MODEL_DESCRIPTION, MODEL_CATEGORY, categories
 from processing import process_files
 from categorizer import Categorizer
 from parsers.ml_model import train_model, predict_unknowns
 from reports import FinancialReport
+import os
+import shutil
+import os
+def clean_exports():
+    if os.path.exists(EXPORT_DIR):
+        shutil.rmtree(EXPORT_DIR)
+    os.makedirs(EXPORT_DIR, exist_ok=True)
 
 def main():
+    clean_exports()
+    os.makedirs(EXPORT_DIR, exist_ok=True)
+    
     df = process_files()
 
     # Rule-based categorization
@@ -25,7 +35,9 @@ def main():
     report.print_wrapup()
 
     # Save audit trail
-    df.to_csv(WORK_FILE, index=False)
-
+    filepath = os.path.join(EXPORT_DIR, WORK_FILE)
+    df.to_csv(filepath, index=False)
+    print(f"✅ Exported processed data to: {filepath}")
+    
 if __name__ == "__main__":
     main()

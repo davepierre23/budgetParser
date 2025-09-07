@@ -1,4 +1,8 @@
 ﻿from pathlib import Path
+import os
+
+BASE_DIR = os.path.dirname(__file__)
+EXPORT_DIR = os.path.join(BASE_DIR, "exports")
 
 DATA_DIR = Path(r"C:\Users\davep\Documents\budgetParser\budgetParser\DjangoRestApisPostgreSQL\budget\data")
 WORK_FILE = "my_data2025.csv"

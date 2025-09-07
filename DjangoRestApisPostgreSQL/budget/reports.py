@@ -2,7 +2,7 @@
 import pandas as pd
 import logging as log
 import calendar
-from config import MODEL_DATE, MODEL_AMOUNT, MODEL_DESCRIPTION, MODEL_CATEGORY, MODEL_ORIGIN, WORK_FILE, YEAR
+from config import EXPORT_DIR, MODEL_DATE, MODEL_AMOUNT, MODEL_DESCRIPTION, MODEL_CATEGORY, MODEL_ORIGIN, WORK_FILE, YEAR
 
 
 log.basicConfig(format="%(message)s", level=log.INFO)
@@ -24,8 +24,9 @@ def get_income(df):
 # -------------------------
 def load_data():
     """Load and filter data for the configured year."""
-    if os.path.exists(WORK_FILE):
-        df = pd.read_csv(WORK_FILE)
+    filepath = os.path.join(EXPORT_DIR, WORK_FILE)
+    if os.path.exists(filepath):
+        df = pd.read_csv(filepath)
     else:
         log.error("Data file not found!")
         return None
@@ -34,11 +35,6 @@ def load_data():
     df = df[df[MODEL_DATE].dt.year == YEAR]
     return df
 
-
-def add_categories(df):
-    """Apply categorization (rule-based/ML)."""
-    df[MODEL_CATEGORY] = df.apply(categorize, axis=1)
-    return df
 
 
 # -------------------------
@@ -91,6 +87,8 @@ class FinancialReport:
 
     def yearly_summary(self, file_name="yearly_summary.xlsx"):
         """Generate Excel summary of income, expenses, and totals."""
+        filepath = os.path.join(EXPORT_DIR, file_name)
+
         expense_summary = (
             self.expenses.groupby(MODEL_CATEGORY)[MODEL_AMOUNT].sum().sort_values()
         )
@@ -98,7 +96,7 @@ class FinancialReport:
             self.income.groupby(MODEL_CATEGORY)[MODEL_AMOUNT].sum().sort_values()
         )
 
-        with pd.ExcelWriter(file_name) as writer:
+        with pd.ExcelWriter(filepath) as writer:
             expense_summary.to_excel(writer, sheet_name="Expenses")
             income_summary.to_excel(writer, sheet_name="Income")
 
@@ -114,13 +112,14 @@ class FinancialReport:
                 writer, sheet_name="Summary", index=False
             )
 
-        log.info(f"✅ Yearly summary saved to {file_name}")
+        log.info(f"✅ Yearly summary saved to {filepath}")
 
     def save_monthly_by_category(self, file_name="monthly_expense_by_category.xlsx"):
         """Pivot monthly expense by category and save to Excel."""
+        filepath = os.path.join(EXPORT_DIR, file_name)
         pivot_df = self.metrics["monthly_expense_by_category"].unstack().fillna(0)
-        pivot_df.to_excel(file_name)
-        log.info(f"✅ Monthly expense by category saved to {file_name}")
+        pivot_df.to_excel(filepath)
+        log.info(f"✅ Monthly expense by category saved to {filepath}")
 
     def print_wrapup(self):
         """Log a quick financial wrap-up (like Spotify Wrapped)."""

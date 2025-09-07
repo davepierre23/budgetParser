@@ -12,7 +12,7 @@ import filecmp
 from config import DATA_DIR, MODEL_DATE,  MODEL_AMOUNT,  MODEL_DESCRIPTION,  MODEL_ORIGIN
 
 
-directory =  "/Users/davepierre/Documents/Projects/budgetParser/data"
+directory =  DATA_DIR
 
 DATE='date'
 AMOUNT='amount'
