@@ -1,8 +1,7 @@
 import sys
-from openpyxl import Workbook, load_workbook
+from openpyxl import load_workbook
 from openpyxl.utils import get_column_letter
 import logging
-import pyexcel as p
 from datetime import datetime
 import sys
 import os  
@@ -25,17 +24,25 @@ MODEL_DESCRIPTION= 'Description'
 MODEL_AMOUNT= 'Amount'
 MODEL_ORIGIN= 'Origin'
 MODEL_CATEGORY= 'Category'
-def convertFile(fileName="americainExpressStatments/Summary.xls"):
+
+
+
+
+def convertFile(fileName="americanExpressStatements/Summary.xls"):
+    # Decide output filename
     fileName2 = fileName
-    if ".xls"  in fileName2:
-        fileName2=fileName2.replace(".xls", ".xlsx")
-    p.save_book_as(file_name=fileName,
-                dest_file_name=fileName2)
-    wb = Workbook()
+    if fileName.endswith(".xls"):
+        fileName2 = fileName.replace(".xls", ".xlsx")
+        
+        # Convert to .xlsx using pandas
+        df = pd.read_excel(fileName, engine="xlrd")
+        df.to_excel(fileName2, index=False, engine="openpyxl")
+
+    # Load the .xlsx workbook
+    wb = load_workbook(fileName2, data_only=True)
     ws = wb.active
-    wb = load_workbook(fileName2,"rb")
-    ws = wb.active
-    return ws , fileName2
+
+    return ws, fileName2
 
 def findOffsetAndEnd(ws):
     offSetValue="Date"
@@ -197,7 +204,7 @@ def main(name):
     else:
         fileName = name
     df =parse(name)
-  
+    print(df)
 def parse(name=""):
     """
     Parses the given file by converting it, populating data from the worksheet,

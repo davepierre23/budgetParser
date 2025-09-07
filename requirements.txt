@@ -1,3 +1,4 @@
+pandas
 click==8.0.3
 et-xmlfile==1.1.0
 Flask==2.0.2
@@ -12,3 +13,4 @@ psycopg2==2.9.3
 psycopg2-binary==2.9.3
 SQLAlchemy==1.4.31
 Werkzeug==2.0.3
+

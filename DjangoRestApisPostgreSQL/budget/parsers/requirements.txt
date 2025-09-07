@@ -1,0 +1,17 @@
+pandas
+openpyxl
+click
+et-xmlfile
+Flask
+Flask-SQLAlchemy
+greenlet
+gunicorn
+itsdangerous
+Jinja2
+MarkupSafe
+psycopg2
+psycopg2-binary
+SQLAlchemy
+Werkzeug
+pyexcel
+pyexcel-xls
