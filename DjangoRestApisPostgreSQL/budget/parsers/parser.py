@@ -3,7 +3,6 @@
 import pandas as pd
 import os
 import logging as log
-
 import scotiaParser
 import americianExpressParser
 import simpliCreditParser
@@ -13,19 +12,26 @@ import wealthSimple
 import calendar
 import wiseParser
 from pathlib import Path
-
+from categorizer import Categorizer
+from sklearn.model_selection import train_test_split
+from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.linear_model import LogisticRegression
+ 
 # Absolute path, raw string style:
-DATA_DIR = r"C:\Users\davep\Documents\budget\DjangoRestApisPostgreSQL\budget\data"
+DATA_DIR = r"C:\Users\davep\Documents\budgetParser\budgetParser\DjangoRestApisPostgreSQL\budget\parsers\data"
 
 # Configuration
 log.basicConfig(format="%(message)s", level=log.INFO)
-WORK_FILE = "my_data.csv"
+WORK_FILE = "my_data2025.csv"
 
 MODEL_DATE = "Date"
 MODEL_DESCRIPTION = "Description"
 MODEL_AMOUNT = "Amount"
 MODEL_ORIGIN = "Origin"
 MODEL_CATEGORY = "Category"
+
+
+
 
 YEAR = 2025
 
@@ -139,6 +145,69 @@ categories = {
 }
 
 
+def train_model(df):
+    """Train a simple text classifier on known categories."""
+    # Use only rows with known categories
+    train_df = df[df[MODEL_CATEGORY] != "Unknown"]
+
+    if train_df.empty:
+        print("⚠️ No labeled data available for training.")
+        return None, None
+
+    X = train_df[MODEL_DESCRIPTION]
+    y = train_df[MODEL_CATEGORY]
+
+    # Vectorize descriptions
+    vectorizer = TfidfVectorizer(stop_words="english")
+    X_vec = vectorizer.fit_transform(X)
+
+    # Train/test split to measure performance
+    X_train, X_test, y_train, y_test = train_test_split(X_vec, y, test_size=0.2, random_state=42)
+
+    model = LogisticRegression(max_iter=1000)
+    model.fit(X_train, y_train)
+
+    acc = model.score(X_test, y_test)
+    print(f"✅ Training complete. Accuracy: {acc:.2%}")
+
+    return model, vectorizer
+
+def predict_unknowns(df, model, vectorizer):
+    mask = df[MODEL_CATEGORY] == "Unknown"
+    if not mask.any():
+        print("✅ No Unknown transactions left.")
+        return df
+
+    X_unknown = df.loc[mask, MODEL_DESCRIPTION]
+    X_unknown_vec = vectorizer.transform(X_unknown)
+
+    preds = model.predict(X_unknown_vec)
+
+    df.loc[mask, MODEL_CATEGORY] = preds
+    df.loc[mask, "CategorySource"] = "ML Model"
+    print(f"🔮 Predicted {mask.sum()} previously Unknown transactions using ML.")
+    return df
+
+def add_categories_with_source(df):
+    results = df.apply(categorize_with_source, axis=1, result_type="expand")
+    df[MODEL_CATEGORY] = results[0]    # the category
+    df["CategorySource"] = results[1]  # where it came from
+    return df
+
+def categorize_with_source(row):
+    """Categorize transactions based on description and record the source."""
+    description = row[MODEL_DESCRIPTION].upper()
+
+    for category, keywords in categories.items():
+        for keyword in keywords:
+            if keyword.upper() in description:
+                return category, f"Rule: '{keyword}'"
+    return "Unknown", "Rule: None"
+
+
+# Initialize categorizer with your keyword dictionary
+cat = Categorizer(categories=categories)
+
 def load_parsers():
     """Load all parsers."""
     return [
@@ -163,7 +232,14 @@ def categorize(row):
 
 def add_category_column(df):
     """Add a category column to the DataFrame."""
-    df[MODEL_CATEGORY] = df.apply(categorize, axis=1)
+    df[MODEL_CATEGORY] = df.apply(cat.categorize, axis=1)
+
+
+def add_categories(df):
+    """Add a category column using Categorizer."""
+    df[MODEL_CATEGORY] = df[MODEL_DESCRIPTION].apply(cat.categorize)
+    return df
+
 
 
 def process_files():
@@ -173,7 +249,6 @@ def process_files():
     else:
         parsers = load_parsers()
         parsed_data = []
-        unparsed_files = []
 
         for filename in os.listdir(DATA_DIR):
             filepath = os.path.join(DATA_DIR, filename)
@@ -186,14 +261,14 @@ def process_files():
                     break
 
             if not parsed:
-                unparsed_files.append(filepath)
+                print(f"⚠️ Could not parse: {filepath}")
 
         if not parsed_data:
             raise ValueError("No valid data was parsed.")
 
         df = pd.concat(parsed_data, ignore_index=True)
         df[MODEL_DATE] = pd.to_datetime(df[MODEL_DATE])
-        add_category_column(df)
+        df = add_categories(df)  # <-- new categorization step
         df.to_csv(WORK_FILE, index=False)
 
     df[MODEL_DATE] = pd.to_datetime(df[MODEL_DATE])
@@ -412,18 +487,28 @@ def save_monthly_expense_by_category(metrics):
     pivot_df = metrics['monthly_expense_by_category'].unstack().fillna(0)
     pivot_df.to_excel('monthly_expense_by_category.xlsx')
 
-
 def main():
     df = load_data()
     if df is None:
         return
 
-    df = add_categories(df)
+    # Step 1: Rule-based
+    df = add_categories_with_source(df)
+
+    # Step 2: Train model on known
+    model, vectorizer = train_model(df)
+
+    # Step 3: Predict unknowns
+    if model and vectorizer:
+        df = predict_unknowns(df, model, vectorizer)
+
+    # Step 4: Continue reporting
     metrics = calculate_metrics(df)
     print_wrapup(metrics)
     save_monthly_expense_by_category(metrics)
 
-
+    # Save with audit trail
+    df.to_csv(WORK_FILE, index=False)
 
 
 def print_unknown_transactions(path):
