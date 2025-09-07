@@ -8,8 +8,9 @@ import logging as log
 logging.basicConfig(format='%(message)s', level=logging.INFO)
 import os
 import filecmp
+from config import DATA_DIR, MODEL_DATE,  MODEL_AMOUNT,  MODEL_DESCRIPTION,  MODEL_ORIGIN
 
-directory =  "/Users/davepierre/Documents/Projects/budgetParser/data"
+directory =DATA_DIR
 
 DATE='Date'
 AMOUNT=' Funds Out'
@@ -18,11 +19,7 @@ OUTPUT_DIRECTORY=''
 COMBINED_SHEET= 'combined_Tangerine.csv'
 DESCRIPTION = ' Transaction Details'
 
-MODEL_DATE='Date'
-MODEL_DESCRIPTION= 'Description'
-	 	 
-MODEL_AMOUNT= 'Amount'
-MODEL_ORIGIN= 'Origin'
+
 def combineTangerineSheets():
     removeDuplicateFiles()
 

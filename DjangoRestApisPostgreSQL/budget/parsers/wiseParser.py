@@ -1,12 +1,8 @@
 import pandas as pd
 from datetime import datetime
+from config import DATA_DIR, MODEL_DATE,  MODEL_AMOUNT,  MODEL_DESCRIPTION,  MODEL_ORIGIN
 
-directory =  "/Users/davepierre/Downloads"
-
-MODEL_DATE = 'Date'
-MODEL_DESCRIPTION = 'Description'
-MODEL_AMOUNT = 'Amount'
-MODEL_ORIGIN = 'Origin'
+directory = DATA_DIR
 
 
 def canParse(filepath):

@@ -8,6 +8,7 @@ import sys
 import pandas as pd
 import logging as log
 logging.basicConfig(format='%(message)s', level=logging.DEBUG)
+from config import DATA_DIR, MODEL_DATE,  MODEL_AMOUNT,  MODEL_DESCRIPTION,  MODEL_ORIGIN
 
 DATE='Pay Date'
 AMOUNT='Net'
@@ -15,10 +16,7 @@ DATA_DIR = "/Users/davepierre/Documents/Projects/budgetParser/data/2022"
 
 DESCRIPTION = 'Pay Type'
 
-MODEL_DATE='Date'
-MODEL_DESCRIPTION= 'Description'
-MODEL_AMOUNT= 'Amount'
-MODEL_ORIGIN= 'Origin'
+
 def main(name):
 
     n = len(sys.argv)

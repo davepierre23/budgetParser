@@ -1,18 +1,11 @@
 import pandas as pd
 import os
 import logging as log
+from config import DATA_DIR,WORK_FILE, MASTER_OUT, MODEL_DATE,  MODEL_AMOUNT,  MODEL_DESCRIPTION, MODEL_TRIP, MODEL_CATEGORY
 
 log.basicConfig(format="%(message)s", level=log.INFO)
 
-# ── column names (same as your current model) ───────────────────────────────────
-MODEL_DATE        = "Date"
-MODEL_DESCRIPTION = "Description"
-MODEL_AMOUNT      = "Amount"
-MODEL_ORIGIN      = "Origin"
-MODEL_CATEGORY    = "Category"
-MODEL_TRIP        = "Trip"          # NEW column
 
-WORK_FILE   = "my_data.csv"         # master data file
 MASTER_OUT  = "all_trips_tagged.csv"  # combined output
 
 # ── trip definitions (extend freely) ────────────────────────────────────────────

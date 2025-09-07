@@ -4,6 +4,8 @@ import pandas as pd
 
 import logging as log
 logging.basicConfig(format='%(message)s', level=logging.INFO)
+from config import DATA_DIR, MODEL_DATE,  MODEL_AMOUNT,  MODEL_DESCRIPTION,  MODEL_ORIGIN
+
 DATA_DIR = "/Users/davepierre/Documents/Projects/budgetParser/data/"
 DATE='Date'
 AMOUNT='Amount'
@@ -12,10 +14,7 @@ TYPE='Type'
 NOTHING='NOTHING'
 MONTHLY_FEE=' MONTHLY FEES'
 
-MODEL_DATE='Date'
-MODEL_DESCRIPTION= 'Description'
-MODEL_AMOUNT= 'Amount'
-MODEL_ORIGIN= 'Origin'
+
 
 ignores=['DILAWRI ' ,'EQUITABLE BANK' ,'American Express'
  'MB-CREDIT CARD/LOC PAY.' ,'Tangerine' ,'MB-TRANSFER'

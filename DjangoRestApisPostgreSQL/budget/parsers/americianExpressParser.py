@@ -7,23 +7,12 @@ import sys
 import os  
 import datetime
 import pandas as pd
+from config import DATA_DIR, MODEL_DATE,  MODEL_AMOUNT,  MODEL_DESCRIPTION,  MODEL_ORIGIN
 
 import logging as log
 logging.basicConfig(format='%(message)s', level=logging.INFO)
 
 from pathlib import Path
-
-# Absolute path, raw string style:
-DATA_DIR = r"C:\Users\davep\Documents\budget\DjangoRestApisPostgreSQL\budget\data"
-DATE='Date'
-AMOUNT='Amount'
-DESCRIPTION = 'Description'
-
-MODEL_DATE='Date'
-MODEL_DESCRIPTION= 'Description'
-MODEL_AMOUNT= 'Amount'
-MODEL_ORIGIN= 'Origin'
-MODEL_CATEGORY= 'Category'
 
 
 
@@ -114,9 +103,9 @@ def populateData(ws):
 
     #convert to dataframe
     df = convertToModels(pd.DataFrame.from_dict(data)) 
-    df[DATE] = pd.to_datetime(df[DATE])
+    df[MODEL_DATE] = pd.to_datetime(df[MODEL_DATE])
     log.debug(df)
-    df = df[df[AMOUNT] < 0]
+    df = df[df[MODEL_AMOUNT] < 0]
   
 
     return df
@@ -170,7 +159,7 @@ def parseByMonth(name=""):
     
     df = parse(name)
 
-    expense_by_month_year = df.groupby([df[DATE].dt.year, df[DATE].dt.month])[AMOUNT].sum()
+    expense_by_month_year = df.groupby([df[MODEL_DATE].dt.year, df[MODEL_DATE].dt.month])[MODEL_AMOUNT].sum()
 
     # print the aggregated income by month and year
     log.info(expense_by_month_year)
@@ -180,14 +169,14 @@ def parseByYear(name=""):
     df = parse(name)
 
    # group the data by month and year, and sum the income
-    expense_by_year = df.groupby([df[DATE].dt.year])[AMOUNT].sum()
+    expense_by_year = df.groupby([df[MODEL_DATE].dt.year])[MODEL_AMOUNT].sum()
 
     # print the aggregated income by month and year
     log.info(expense_by_year)
 
 def convertToModels(df):
  
-    new_df = df.loc[:, [DATE,DESCRIPTION, AMOUNT]]
+    new_df = df.loc[:, [MODEL_DATE,MODEL_DESCRIPTION, MODEL_AMOUNT]]
 
     #basic model 
     #Date  #Description #Amount

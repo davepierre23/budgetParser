@@ -2,10 +2,7 @@ import pandas as pd
 import logging as log
 log.basicConfig(format='%(message)s', level=log.INFO)
 
-MODEL_DATE = 'Date'
-MODEL_DESCRIPTION = 'Description'
-MODEL_AMOUNT = 'Amount'
-MODEL_CATEGORY = 'Category'
+from config import DATA_DIR, MODEL_DATE,  MODEL_AMOUNT,  MODEL_DESCRIPTION,  MODEL_CATEGORY
 
 
 def analyze_trip(df, trip_name, start_date, end_date, keywords):
