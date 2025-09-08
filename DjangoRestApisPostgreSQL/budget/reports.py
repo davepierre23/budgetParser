@@ -4,7 +4,6 @@ import logging as log
 import calendar
 from config import EXPORT_DIR, MODEL_DATE, MODEL_AMOUNT, MODEL_DESCRIPTION, MODEL_CATEGORY, MODEL_ORIGIN, WORK_FILE, YEAR
 
-
 log.basicConfig(format="%(message)s", level=log.INFO)
 
 
