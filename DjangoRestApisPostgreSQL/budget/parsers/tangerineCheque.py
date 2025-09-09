@@ -38,7 +38,7 @@ def combineTangerineSheets():
     # Write the combined data to a new Excel file
     combined_data.to_csv(OUTPUT_DIRECTORY+COMBINED_SHEET, index=False)
 def canParse(full_path):
-    return "4012914604.CSV"  in full_path
+    return "4012914604.CSV"  in full_path or "Chequing.CSV" in full_path
 def main(name):
 
     n = len(sys.argv)
@@ -84,23 +84,26 @@ def parse(name):
     return df
 
 def parseEtransfer(df):
-
     # Filter rows where the 'Name' column contains 'INTERAC e-Transfer'
-    etransfer_data = df[df[MODEL_DESCRIPTION].str.contains('INTERAC e-Transfer')]
+    etransfer_data = df[df[MODEL_DESCRIPTION].str.contains('INTERAC e-Transfer')].copy()
  
     # Convert 'Date' column to datetime if it's not already in datetime format
-    etransfer_data[MODEL_DATE] = pd.to_datetime(etransfer_data[MODEL_DATE])
+    etransfer_data.loc[:, MODEL_DATE] = pd.to_datetime(etransfer_data[MODEL_DATE])
 
-    # Extract the year from the 'Date' column
-    etransfer_data['Year'] = etransfer_data[MODEL_DATE].dt.year
-    etransfer_data['Month'] = etransfer_data[MODEL_DATE].dt.month
+    # Extract the year and month
+    etransfer_data.loc[:, 'Year'] = etransfer_data[MODEL_DATE].dt.year
+    etransfer_data.loc[:, 'Month'] = etransfer_data[MODEL_DATE].dt.month
 
-    # Group by 'Year' and 'Description', then calculate the sum of 'Amount' for each group
     # Group by 'Year', 'Month', and 'Description', then calculate the sum of 'Amount' for each group
-    grouped_data = etransfer_data.groupby(['Year', 'Month', MODEL_DESCRIPTION])[MODEL_AMOUNT].sum().reset_index()
+    grouped_data = (
+        etransfer_data
+        .groupby(['Year', 'Month', MODEL_DESCRIPTION])[MODEL_AMOUNT]
+        .sum()
+        .reset_index()
+    )
 
-    # Print the grouped data
     print(grouped_data)
+
  
 def parseByMonth(name=""):
 

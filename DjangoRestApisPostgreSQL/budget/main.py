@@ -38,8 +38,8 @@ def main():
 
     # ML-based categorization for unknowns
     model, vectorizer = train_model(df, MODEL_DESCRIPTION, MODEL_CATEGORY)
-    if model:
-        df = predict_unknowns(df, model, vectorizer, MODEL_DESCRIPTION, MODEL_CATEGORY)
+    # if model:
+    #     df = predict_unknowns(df, model, vectorizer, MODEL_DESCRIPTION, MODEL_CATEGORY)
 
     # Generate reports
     report = FinancialReport(df)
