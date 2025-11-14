@@ -1,6 +1,6 @@
 ﻿import os
 import pandas as pd
-from config import DATA_DIR, WORK_FILE, MODEL_DATE, YEAR
+from config import DATA_DIR, WORK_FILE, MODEL_DATE, YEAR ,MODEL_DESCRIPTION, MODEL_AMOUNT, MODEL_SOURCE
 from categorizer import Categorizer
 from parsers.ml_model import train_model, predict_unknowns
 from parsers import (
@@ -30,9 +30,9 @@ def load_parsers():
 
 
 def process_files():
-    """Parse and process transaction files into a unified DataFrame."""
+    """Parse, deduplicate, and return transaction data as a unified DataFrame."""
     if os.path.exists(WORK_FILE):
-        # Load cached transactions
+        # ✅ Load cached transactions
         df = pd.read_csv(WORK_FILE)
         df[MODEL_DATE] = pd.to_datetime(df[MODEL_DATE])
     else:
@@ -42,7 +42,7 @@ def process_files():
         for filename in os.listdir(DATA_DIR):
             filepath = os.path.join(DATA_DIR, filename)
 
-            # Skip if file hasn’t changed since last import
+            # ✅ Skip unchanged files
             if not should_import(filepath):
                 print(f"⏩ Skipping {filepath}, no new updates.")
                 continue
@@ -50,9 +50,17 @@ def process_files():
             parsed = False
             for parser in parsers:
                 if parser.canParse(filepath):
+              
+                    print(f"⚠️ Parser {parser.__name__}  data for {filepath}")
                     df_parsed = parser.parse(filepath)
+                    
 
-                    # ✅ Keep only rows newer than last run
+                    if df_parsed is None or df_parsed.empty:
+                        print(f"⚠️ Parser {parser.__name__} returned no data for {filepath}")
+                        continue
+                    df_parsed[MODEL_SOURCE] = filename  # ✅ Track file origin
+
+                    # ✅ Filter only new transactions
                     df_new = get_new_transactions(df_parsed, MODEL_DATE)
 
                     if not df_new.empty:
@@ -74,5 +82,14 @@ def process_files():
         df = pd.concat(parsed_data, ignore_index=True)
         df[MODEL_DATE] = pd.to_datetime(df[MODEL_DATE])
 
-    # Keep only this year's data
+        # ✅ Deduplicate across all parsed files
+        before_count = len(df)
+        df = df.drop_duplicates(
+            subset=[MODEL_DATE, MODEL_DESCRIPTION,MODEL_AMOUNT, MODEL_SOURCE],
+            keep="first"
+        )
+        after_count = len(df)
+        print(f"🧹 Deduplication complete: removed {before_count - after_count} duplicate rows.")
+
+    # ✅ Keep only rows from this year
     return df[df[MODEL_DATE].dt.year == YEAR]

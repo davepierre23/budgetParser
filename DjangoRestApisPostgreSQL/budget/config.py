@@ -14,6 +14,8 @@ MODEL_DESCRIPTION = "Description"
 MODEL_AMOUNT = "Amount"
 MODEL_ORIGIN = "Origin"
 MODEL_CATEGORY = "Category"
-MODEL_TRIP        = "Trip"        
+MODEL_TRIP        = "Trip"   
+MODEL_SOURCE ="source_file"
+
 # Categories dictionary
 from categories import categories

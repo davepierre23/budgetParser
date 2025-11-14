@@ -98,8 +98,10 @@ def populateData(ws):
     data=[]
     transactonDescriptCol= findDescription(ws,offSetRow)
     for row in  range (offSetRow,maxRow):
-        data.append(createRow(row,ws,transactonDescriptCol))
-        log.debug("")
+        row = createRow(row,ws,transactonDescriptCol)
+        if(not(row is None)):
+            data.append(row)
+            log.debug("")
 
     #convert to dataframe
     df = convertToModels(pd.DataFrame.from_dict(data)) 
@@ -133,15 +135,19 @@ def createRow(row,ws,transactonDescriptCol) :
     transactonDescript = ws[transactonDescriptLetter +str(row)].value
 
     amount= ws[amountCol +str(row)].value
+
+    if(amount is None):
+        return None
   
     bankAction = PAYEMENT if "-"  in amount else SPEND
     if( "-"  in amount):
         amount = amount.replace("-", "")
     else:
         amount = "-"+amount
+        
+    amount = amount.replace("$", "").replace(",", "").strip()
+    amount = float(amount.split()[0])
 
-    amount= amount.replace("$", "")
-    amount = float(amount.replace(',', ''))
   
     
     row = {

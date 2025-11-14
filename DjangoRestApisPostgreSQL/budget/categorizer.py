@@ -8,6 +8,8 @@ class Categorizer:
         self.categories = categories
 
     def categorize_with_source(self, description: str):
+        if(description is None) or (not isinstance(description, str)) or (description.strip() == ""):
+            return "Unknown", "Rule: None"
         desc = description.upper()
         for category, keywords in self.categories.items():
             for keyword in keywords:
