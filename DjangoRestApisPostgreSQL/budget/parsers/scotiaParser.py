@@ -9,7 +9,7 @@ from config import DATA_DIR, MODEL_DATE,  MODEL_AMOUNT,  MODEL_DESCRIPTION,  MOD
 DATA_DIR = "/Users/davepierre/Documents/Projects/budgetParser/data/"
 DATE='Date'
 AMOUNT='Amount'
-DESCRIPTION='Description'
+DESCRIPTION='Description' 
 TYPE='Type'
 NOTHING='NOTHING'
 MONTHLY_FEE=' MONTHLY FEES'
@@ -19,6 +19,8 @@ MONTHLY_FEE=' MONTHLY FEES'
 ignores=['DILAWRI ' ,'EQUITABLE BANK' ,'American Express'
  'MB-CREDIT CARD/LOC PAY.' ,'Tangerine' ,'MB-TRANSFER'
  'ABM Withdrawal' ,'WITHDRAWAL', 'CANADA' ,'FREE INTERAC E-TRANSFER']
+
+
 
 def canParse(full_path):
     return  "pcbanking"  in full_path 
@@ -83,18 +85,7 @@ def parseByYear(name=""):
     log.debug(expense_by_year)
     
 def removeIgnored(df):
-    ignores = [
-        'DILAWRI CHEVROLET BUICK GATINEAU',
-        'EQUITABLE BANK',
-        'American Express',
-        'MB-CREDIT CARD/LOC PAY.',
-        'Tangerine',
-        'MB-TRANSFER',
-        'ABM Withdrawal',
-        'WITHDRAWAL',
-        'CANADA',
-        'FREE INTERAC E-TRANSFER'
-    ]
+
 
     # Use the `isin` method to check if the "DESCRIPTION" is in the `ignores` list
     mask = ~df[MODEL_DESCRIPTION].isin(ignores)

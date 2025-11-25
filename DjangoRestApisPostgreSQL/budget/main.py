@@ -35,6 +35,7 @@ def main():
     # Rule-based categorization
     cat = Categorizer(categories)
     df = cat.apply(df, MODEL_DESCRIPTION, MODEL_CATEGORY)
+    df = cat.interactive_categorizer(df)
 
     # ML-based categorization for unknowns
     model, vectorizer = train_model(df, MODEL_DESCRIPTION, MODEL_CATEGORY)
@@ -47,6 +48,7 @@ def main():
     report.yearly_summary()
     report.save_monthly_by_category()
     report.print_wrapup()
+    report.get_unknowns(True)
 
     # Save audit trail
     output_file = os.path.join(EXPORT_DIR, WORK_FILE)

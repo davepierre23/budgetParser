@@ -34,7 +34,13 @@ def load_data():
     df = df[df[MODEL_DATE].dt.year == YEAR]
     return df
 
-
+def get_unknown_categories(df):
+    """Return rows where category is missing or marked as unknown."""
+    return df[
+        df[MODEL_CATEGORY].isna() 
+        | (df[MODEL_CATEGORY].str.strip() == "") 
+        | (df[MODEL_CATEGORY].str.lower() == "unknown")
+    ]
 
 # -------------------------
 # Financial Report Class
@@ -130,3 +136,19 @@ class FinancialReport:
         log.info(f"📅 Smallest Spending Month: {self.metrics['smallest_spending_month']}")
         log.info(f"🎯 Biggest Splurge: ${-self.metrics['biggest_splurge']:.2f}")
         log.info(f"☕ Most Frequent Vendor: {self.metrics['most_frequent_vendor']}")
+
+    def get_unknowns(self, save=False, file_name="unknown_categories.csv"):
+        """Print unknown categories and optionally save them to a file."""
+        unknown_df = get_unknown_categories(self.df)
+
+        # Print to console
+        log.info("\n⚠️ Unknown Categories:")
+        log.info(unknown_df)
+
+        # Save if requested
+        if save:
+            filepath = os.path.join(EXPORT_DIR, file_name)
+            unknown_df.to_csv(filepath, index=False)
+            log.info(f"📁 Unknown categories saved to {filepath}")
+
+        return unknown_df

@@ -1,106 +1,364 @@
-﻿categories = {
-    "Wealthsimple": ["Wealthsimple"],
-    
-    "Alcohol": ["LCBO/RAO", "PURE BREW"],
-
+categories = {
+    "Wealthsimple": [
+        "Wealthsimple"
+    ],
+    "Alcohol": [
+        "LCBO/RAO",
+        "PURE BREW"
+    ],
     "Groceries": [
-        "TooGoodT", "FLASHFOOD", "HALIBUT HOUSE", "WALMART.CA", "FRESHCO", "BULK BARN", "DUNKIN",
-        "REVOLUTIONN", "NO FRILLS", "FOOD BASICS", "METRO", "SOBEYS", "LOBLAWS", "WAL*MART", "CHAP CHAP SNACKS Ottawa",
-        "NSEYA'S", "Shoppers Drug Mart", "FARM BOY", "REXALL", "YIG", "T&T", "CANADIAN TIRE"
+        "68044 MACS CONV. STORES MANOTICK",
+        "BULK BARN",
+        "CANADIAN TIRE",
+        "CHAP CHAP SNACKS Ottawa",
+        "DUNKIN",
+        "FARM BOY",
+        "FLASHFOOD",
+        "FOOD",
+        "FOOD BASICS",
+        "FRESH",
+        "FRESHCO",
+        "HALIBUT HOUSE",
+        "LOBLAWS",
+        "MARKET",
+        "METRO",
+        "NO FRILLS",
+        "NSEYA'S",
+        "REVOLUTIONN",
+        "REXALL",
+        "SOBEYS",
+        "SUPERMARKET",
+        "Shoppers Drug Mart",
+        "T&T",
+        "TooGoodT",
+        "WAL*MART",
+        "WALMART.CA",
+        "YIG"
     ],
-
     "Restaurants": [
-        "MIKE DEAN'S", "Cafe", "LITTLE CAESARS", "ROYAL OAK", "BOOSTER JUICE", "CORA", "HALIBUT",
-        "TIPIKLIZ", "HARVEY", "LEVEL ONE", "DAIRY QUEEN", "SHOELESS JOES", "Subway", "FOOD",
-        "PITA BELL KABAB", "Chances", "SHAWARMA PALACE", "WENDYS", "LOUIS", "JONNY CANUCK'S",
-        "CAFÉ LATTE", "NOM NOM", "PRESOTEA", "HEY KITCHEN", "MEZZANOTTE", "A&W", "BAKERY",
-        "DOUGHNUTS", "JACK ASTOR'S", "MCDONALD'S", "DOORDASH", "Seoul Dog", "PIZZERIA",
-        "FAIRMONT CHATEAU LAURIE", "COBS BREAD", "MILKMAN", "SUSHI", "BRIG", "LEXINGTON SMOKEHOUSE",
-        "CHICK-FIL-A", "KFC", "FRUIT", "BROADWAY", "DELICIOUS STEAKHOUSE", "TIM HORTONS",
-        "STARBUCKS", "LUNCHBOX", "Wild Wing", "THE ALLEY", "GYUBEE", "RED LOBSTER", "MENCHIE",
-        "SQ *PANCHO'S", "DAOL", "SOUL STONE", "MR. PRETZEL", "METROPOLITAIN", "St. Louis Bar",
-        "Bagel", "COCO FRESH TEA", "LE ST LAURENT", "MAVERICK'S", "POPEYES", "Chatime", "SHAKER",
-        "MARY BROWN'S", "SUSHI KAN", "MANDARIN", "SHOPPERS", "LE MIEN", "JOLLIBEE-", "MOXIES",
-        "AZTEC", "GREEN FRESH", "TEALIVE", "BOSTON PIZZA", "EAST SIDE MARIO", "Pizza Pizza",
-        "THE GREAT CANADIAN PO", "Carleton Web", "UBER EATS", "BIG BONE BBQ","SKIPTHEDISHES"
+        "-Marble Slab JONNY CANUCK'S",
+        "A&W",
+        "AZTEC",
+        "BAKERY",
+        "BARBURRITO",
+        "BBQ",
+        "BIG BONE BBQ",
+        "BOSTON PIZZA",
+        "BRIG",
+        "BROADWAY",
+        "BURGER",
+        "BURGER KING",
+        "Bagel",
+        "CAFE",
+        "CHAP CHAP SNACKS        OTTAWA",
+        "CHICK-FIL-A",
+        "CHUNGCHUN ORLEANS",
+        "COBS BREAD",
+        "COCO FRESH TEA",
+        "COFFEE AND BAR",
+        "CORA",
+        "Carleton Web",
+        "Chatime",
+        "DAIRY QUEEN",
+        "DAOL",
+        "DELICIOUS STEAKHOUSE",
+        "DINER",
+        "DIVISORIA RESTO",
+        "DOORDASH",
+        "DOUGHNUTS",
+        "EAST SIDE MARIO",
+        "FAIRMONT CHATEAU",
+        "FAIRMONT CHATEAU LAURIE",
+        "FAT BASTARD BURRITO",
+        "FRIES",
+        "FRUIT",
+        "GOOOD&TASTY OAKWOOD ON",
+        "GYUBEE",
+        "HARVEY",
+        "HEY KITCHEN",
+        "JACK ASTOR'S",
+        "JOLLIBEE-",
+        "JUICE DUDEZ ORLEANS ORLEANS ON",
+        "KREME NIDO              OTTAWA",
+        "LITTLE CAESARS",
+        "LS Maison ODDO",
+        "LUNCHBOX",
+        "MANDARIN",
+        "MARY BROWN'S",
+        "MAVERICK'S",
+        "MCDONALD'S",
+        "MCDONALDS 14398 ORLEANS ON",
+        "MEET NOODLE",
+        "MENCHIE",
+        "MIKE DEAN'S",
+        "MILKMAN",
+        "MISS MOLLY'S OTTAWA ON",
+        "MUCHO BURRITO - 2173 ORLEANS ON",
+        "NICKY",
+        "NICKYPOPEYES",
+        "NOM NOM",
+        "PITA BELL KABAB",
+        "PIZZA",
+        "PIZZERIA",
+        "POKE",
+        "POPEYES #12287 OTTAWA ON",
+        "PRESOTEA",
+        "Pizza Pizza",
+        "RA-TD PLACE STDM-10751 OTTAWA ON",
+        "ROYAL OAK",
+        "SAVEURS EPICERIE URBAI GATINEAU QC",
+        "SAVEURS EPICERIEUBER EATS",
+        "SEE ME SPARKLEMOXIES",
+        "SHAKER",
+        "SHANGHAI",
+        "SHAWARMA PALACE",
+        "SHOPPERS",
+        "SKIPTHEDISHES",
+        "SOUL STONE",
+        "SP GOOD GRAZES ORLEANS ON",
+        "SQ *PANCHO'S",
+        "SQ *SEE ME SPARKLE OTTAWA ON",
+        "ST. LOUIS BAR & GRILL # ORLEANS",
+        "ST. LOUIS BAR & GRILL ORLEANS ON",
+        "ST. LOUIS BAR & GRILLMCDONALD",
+        "STARBUCKS",
+        "STORE OTTAWA ON",
+        "SUBS",
+        "SUBWAY",
+        "SUSHI",
+        "SUSHI KAN",
+        "Seoul Dog",
+        "TABLE SODAM ",
+        "TACO",
+        "TEALIVE",
+        "THE ALLEY",
+        "THE GREAT CANADIAN PO",
+        "TIGER ROOTS",
+        "TIM HORTONS",
+        "TST-MARBLE SLAB CREAME ORLEANS ON",
+        "WENDY",
+        "Wild Wing"
     ],
-
     "Clothing": [
-        "Tip Top", "SPORT CHEK", "WINNERS", "ADIDAS", "SPORTS", "OLD NAVY", "THE GAP",
-        "FAIRWEATHER", "THREADS TAILORS", "Shoe Company", "SP JOJIKA", "SHEIN", "VALUE VILLAGE",
-        "OVO", "BOATHOUSE", "LEZE THE LABEL"
+        "ADIDAS",
+        "BOATHOUSE",
+        "FAIRWEATHER",
+        "H&M",
+        "LEZE THE LABEL",
+        "LIBRAIR UNVDOTTAWA 9    OTTAWA",
+        "OLD NAVY",
+        "OVO",
+        "SHEIN",
+        "SPORT CHEK",
+        "SPORTS",
+        "Shoe Company",
+        "THE GAP",
+        "THREADS TAILORS",
+        "Tip Top",
+        "VALUE VILLAGE",
+        "ZARA"
     ],
-
     "Entertainment": [
-        "DOOLY'S OTTAWA INC. OTTAWA ON", "DISNEYPLUS", "GOLF", "FALCON RIDGE", "PUTTING EDGE",
-        "NORDIK", "TEE 2 GREEN", "DOLLYS", "STEAM", "PHD IN WAVES", "CALYPSO", "TICKET",
-        "SMASH ROOM", "LANDMARK", "WHITE SANDS", "Orleans Bowling.com", "BOWLING",
-        "Top Karting Hull", "Sunrise Records", "SP TSX1", "eBay", "GAMESTOP", "CARTA", "EB *ALL FALLS DOWN FIL TORONTO"
-        "Canada Computers", "PLAYSTATION", "RED DRAGON", "VRADVENTURES.ZONE", "VR ADVENTURES.ZONE",
-        "EVENTBRITE", "TCGPLAYER", "TCGPLAYER.COM", "401 GAMES", "Wtbmatters", "Monkey Kart","Entertain St991",
-        "Teamlab Planets Tokyo", "Crypto Arena Mercandise", "HIPSTER LASERS", "WEEB MANIA", "SWIMPLY","Anchor Night Club"
+        "401 GAMES",
+        "AIRALO",
+        "ARCHERY",
+        "Anchor Night Club",
+        "BOWLING",
+        "CALYPSO",
+        "CARTA",
+        "CHARTWELLS-OTTAWAUUCU-279 OTTAWA ON",
+        "CRYPTO ARENA MERCHANDI",
+        "Canada Computers",
+        "DISNEYPLUS",
+        "DOLLYS",
+        "DOOLY'S OTTAWA INC. OTTAWA ON",
+        "EB *ALL FALLS DOWN FIL  TORONTO",
+        "EB *ALL FALLS DOWN FIL TORONTO",
+        "EVENTBRITE",
+        "Entertain St991",
+        "FALCON RIDGE",
+        "GAMES",
+        "GAMESTOP",
+        "GLOBAL-E CANADA E-COMME VANCOUVER",
+        "GOLF",
+        "HIPSTER LASERS",
+        "LANDMARK",
+        "MIRABEL'S YUMMIES 001   OTTAWA",
+        "Monkey Kart",
+        "NORDIK",
+        "PHD IN WAVES",
+        "PLAYSTATION",
+        "PUTTING EDGE",
+        "RAKUTEN",
+        "RED DRAGON",
+        "SEATGEEK",
+        "SMASH ROOM",
+        "SP PERFORMANCE TENNI    OTTAWA",
+        "SP TSX1",
+        "STEAM",
+        "STITTSVILLE SHOOTING IN STITTSVILLE",
+        "SWIMPLY",
+        "Sunrise Records",
+        "TCGPLAYER",
+        "TCGPLAYER.COM",
+        "TICKETMASTER",
+        "Teamlab Planets Tokyo",
+        "Top Karting Hull",
+        "VR ADVENTURES.ZONE",
+        "VRADVENTURES.ZONE",
+        "WEEB MANIA",
+        "YOMJERSTUDIO            OTTAWA"
     ],
-
-    "Car Loan": ["Loan Payment", "BANK STREET MAZDA"],
-
-    "Car Maintenance": ["OIL CHANGERS", "Caps Auto", "CARLING TIRE"],
-
+    "Car Loan": [
+        "BANK STREET MAZDA",
+        "Loan Payment"
+    ],
+    "Car Maintenance": [
+        "CAR WASH",
+        "CARLING TIRE",
+        "Caps Auto",
+        "OIL CHANGERS"
+    ],
     "Travel": [
-        "Hopper",
-        "Airlines", "FLIGHTHUB", "AIRBNB", "Caltrain","AIRCANADA", "HOPPER", "KLOOK TRAVEL TECH", "KLOOK",
-        "JRC SHINKANSEN", "CALTRAIN", "MOXY DWNTN LOS ANGEL", "THE HOXTON", "GUEST SERVICES OF",
-        "JRC SMART EX TOKYO", "RADICAL TOKYO", "SEVEN-ELEVEN", "MEGADONQUIJOTE", "TEAMLAB PLANETS"
+        "AIRCANADA",
+        "AIRBNB",
+        "AIRLINES",
+        "CAA NORTH",
+        "Caltrain",
+        "GUEST SERVICES OF",
+        "HOPPER",
+        "HOTEL PONTIAC",
+        "JRC SHINKANSEN",
+        "JRC SMART EX TOKYO",
+        "KLOOK",
+        "KLOOK TRAVEL TECH",
+        "MEGADONQUIJOTE",
+        "MOXY DWNTN LOS ANGEL",
+        "RADICAL TOKYO",
+        "SEVEN-ELEVEN",
+        "TEAMLAB PLANETS",
+        "THE HOXTON",
+        "Travel",
+        "Hopper"
     ],
-
-    "Travel": ["MOXY DWNTN LOS ANGEL", "AIRBnb" , "AIRCANADA", "AIRLINES","KLOOK","THE HOXTON", "FAIRMONT CHATEAU", "HOTEL PONTIAC", "AIRALO ", "CAA NORTH"],
-
-    "Subscriptions": ["DISNEYPLUS", "MEMBERSHIP FEE INSTALLMENT", "NETFLIX"],
-
-    "Car Insurance": ["BELAIR INS/ASS", "BELAIRDIRECT", "BELAIR"],
-
+    "Subscriptions": [
+        "DISNEYPLUS",
+        "MEMBERSHIP FEE INSTALLMENT",
+        "NETFLIX"
+    ],
+    "Car Insurance": [
+        "BELAIR",
+        "BELAIR INS/ASS",
+        "BELAIRDIRECT"
+    ],
     "Online Shopping": [
-        "LEGO", "JEWELLERS", "HIVEMAPPER", "MY USADDRESS", "AFROBLAST", "SIMPLYMODBOX",
-        "AMZN", "AMAZON", "APPLE", "SNAPLII" 
+        "AFROBLAST",
+        "AMAZON",
+        "AMZN",
+        "APPLE",
+        "HIVEMAPPER",
+        "JEWELLERS",
+        "LEGO",
+        "MY USADDRESS",
+        "SIMPLYMODBOX",
+        "SNAPLII"
     ],
-
     "Transportation": [
-        "Uber", "Ubr*", "Lyft", "PRESTO", "PPARK", "BUSBUD","Mto Tsd ", "QP ORLEANS", "IMPARK", "PARKING"
+        "BUSBUD",
+        "IMPARK",
+        "Mto Tsd",
+        "PARKING",
+        "PPARK",
+        "PRESTO",
+        "QP ORLEANS",
+        "Uber",
+        "Ubr*",
+        "Lyft"
     ],
-
     "Doctors/Dental/Vision": [
-        "APPLE'S CROWN", "ACE OF SPADES", "CLEARVIEW", "KITS", "Echo", "LASIK MD", "PHYSIO",
-        "HUNTER CHIROPRACTIC", "TENTH LINE PHARMACY"
+        "ACE OF SPADES",
+        "APPLE'S CROWN",
+        "CLEARVIEW",
+        "Echo",
+        "HUNTER CHIROPRACTIC",
+        "KITS",
+        "LASIK MD",
+        "PHYSIO",
+        "TENTH LINE PHARMACY"
     ],
-
     "Personal Care": [
-        "CLORE", "MONTEGO", "MONAT", "NANCY'S NAILS AND LASHE", "BATH & BODY WORKS"
+        "BATH & BODY WORKS",
+        "CLORE",
+        "MONAT",
+        "MONTEGO",
+        "NANCY'S NAILS AND LASHE"
     ],
-
-    "Gym": ["SHOWCASE", "SP CROSSROPE", "FIT4LESS", "OTTAWACITY"],
-
+    "Gym": [
+        "FIT4LESS",
+        "OTTAWACITY",
+        "SHOWCASE",
+        "SP CROSSROPE"
+    ],
     "Home Goods": [
-        "QUICK PICK", "Dollarama", "PANDABUY", "BEST BUY", "DOLLAR TREE", "GIANT TIGER",
-        "CDN TIRE", "HUDSON'S BAY", "WAL-MART", "Kylescouter", "CANADIANTIRE"
+        "BEST BUY",
+        "CANADIANTIRE",
+        "CDN TIRE",
+        "DOLLAR TREE",
+        "Dollarama",
+        "GIANT TIGER",
+        "HUDSON'S BAY",
+        "Kylescouter",
+        "MICHAELS #3948 MICHAELS ORLEANS",
+        "PANDABUY",
+        "QUICK PICK",
+        "WAL-MART"
     ],
-
-    "Income": ["Basic Pay", "Acting / Appointment Pay"],
-
+    "Income": [
+        "Acting / Appointment Pay",
+        "Basic Pay"
+    ],
     "Gas": [
-        "PIONEER", "ULTRAMAR", "CIRCLEK", "MACEWEN", "MOBIL", "GAS", "PETROCAN", "MRGAS",
-        "ESSO", "SHELL", "MAC EWEN", "FUEL", "PETRO"
+        "CIRCLEK",
+        "ESSO",
+        "FUEL",
+        "GAS",
+        "MAC EWEN",
+        "MACEWEN",
+        "MOBIL",
+        "MRGAS",
+        "PETRO",
+        "PETROCAN",
+        "PIONEER",
+        "SHELL",
+        "ULTRAMAR"
     ],
-
-    "Church": ["CALVARY CHURCH"],
-
-    "Education": ["OPTIONS", "R.I.S.E. ACADEMY", "The Aqua Life Swim Sch"],
-
+    "Church": [
+        "CALVARY CHURCH"
+    ],
+    "Education": [
+        "OPTIONS",
+        "R.I.S.E. ACADEMY",
+        "The Aqua Life Swim Sch"
+    ],
     "Miscellaneous Payment": [
-        "Returned Payment", "REFUNDED"
+        "Returned Payment",
+        "REFUNDED"
     ],
-
     "Miscellaneous Charges": [
-        "PARKSMART", "IMPARK00110003U", "MONTHLY FEES", "Dishonoured Payment", "PAYBYPHONE",
-        "NSF", "PARKING", "INDIGO PARK", "HOTEL PONTIAC", "Place D'orlans", "NCC- VINCENT MASSEY PA",
-        "Opl/Bpo", "PREMIUM"
+        "Dishonoured Payment",
+        "HOTEL PONTIAC",
+        "IMPARK00110003U",
+        "INDIGO PARK",
+        "MONTHLY FEES",
+        "NCC- VINCENT MASSEY PA",
+        "NSF",
+        "Opl/Bpo",
+        "PARKING",
+        "PARKSMART",
+        "PAYBYPHONE",
+        "PREMIUM",
+        "Place D'orlans",
+        "BRIDGE",
+        "TOLL"
     ]
 }
