@@ -162,6 +162,8 @@ def convertToModels(df):
 
     # Remove rows where the 'Amount' column has NaN
     cleaned_df = new_df.dropna(subset=[MODEL_AMOUNT])
+    cleaned_df = cleaned_df[cleaned_df[MODEL_AMOUNT] < 0]
+
 
     print("Cleaned DataFrame:")
     print(cleaned_df) 

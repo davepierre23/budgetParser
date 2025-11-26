@@ -1,5 +1,6 @@
 ﻿import json
 import pandas as pd
+import re
 
 class Categorizer:
     def __init__(self, categories, categories_path="categories.py"):
@@ -66,11 +67,12 @@ class Categorizer:
         print(f"\nFound {len(unknowns)} unknown transactions.\n")
 
         category_names = list(self.categories.keys())
-
         for idx, row in unknowns.iterrows():
+            description = row["Description"]
+            clear_desc, city, province = self.parse_description(description)
             print("-" * 70)
             print(f"Date:         {row['Date']}")
-            print(f"Description:  {row['Description']}")
+            print(f"Description:  {clear_desc}")
             print(f"Amount:       {row['Amount']}")
             print(f"Origin:       {row['Origin']}")
             print(f"Source File:  {row['source_file']}")
@@ -96,19 +98,19 @@ class Categorizer:
             df.at[idx, "CategorySource"] = "Manual"
 
             # Prepare description for saving
-            cleaned_desc = row["Description"].upper().replace(",", "").strip()
+   
 
             # Add new keyword to category
-            if cleaned_desc not in self.categories[category]:
-                self.categories[category].append(cleaned_desc)
+            if clear_desc not in self.categories[category]:
+                self.categories[category].append(clear_desc)
 
-            # Remove duplicates
-            self.categories[category] = sorted(list(set(self.categories[category])))
+                # Remove duplicates
+                self.categories[category] = sorted(list(set(self.categories[category])))
 
-            print(f"✔ Assigned '{cleaned_desc}' → {category}\n")
+                print(f"✔ Assigned '{description}' → {category}\n")
 
-        # Save updated categories back to Python file
-        self.save_categories()
+            # Save updated categories back to Python file
+            self.save_categories()
 
-        print("✅ Finished processing all unknown transactions.\n")
-        return df
+            print("✅ Finished processing all unknown transactions.\n")
+            return df

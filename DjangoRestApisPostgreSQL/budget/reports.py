@@ -58,6 +58,13 @@ class FinancialReport:
         total_expense = self.expenses[MODEL_AMOUNT].sum()
         net_savings = total_income + total_expense  # expenses negative
 
+        monthly_income_by_category = (
+            self.income
+            .groupby(self.income[MODEL_DATE].dt.month)[MODEL_AMOUNT]
+            .sum()
+        )
+
+    
         monthly_expense = (
             self.expenses.groupby(self.df[MODEL_DATE].dt.month)[MODEL_AMOUNT].sum()
         )
@@ -75,12 +82,13 @@ class FinancialReport:
         biggest_splurge = self.expenses[MODEL_AMOUNT].min()
 
         # Most frequent vendor
-        most_frequent_vendor = self.df[MODEL_DESCRIPTION].value_counts().idxmax()
+        most_frequent_vendor = self.expenses[MODEL_DESCRIPTION].value_counts().idxmax()
 
         self.metrics = {
             "total_income": total_income,
             "total_expense": total_expense,
             "net_savings": net_savings,
+            "monthly_income_by_category": monthly_income_by_category, 
             "monthly_expense": monthly_expense,
             "monthly_expense_by_category": monthly_expense_by_category,
             "largest_spending_month": calendar.month_name[largest_spending_month],
@@ -119,12 +127,20 @@ class FinancialReport:
 
         log.info(f"✅ Yearly summary saved to {filepath}")
 
-    def save_monthly_by_category(self, file_name="monthly_expense_by_category.xlsx"):
+    def save_monthly_income__by_category(self, file_name="monthly_income_by_category.xlsx"):
+        """Pivot monthly expense by category and save to Excel."""
+        filepath = os.path.join(EXPORT_DIR, file_name)
+        pivot_df = self.metrics["monthly_income_by_category"]
+        pivot_df.to_excel(filepath)
+        log.info(f"✅ Monthly income by category saved to {filepath}")
+
+    def save_monthly_expenses__by_category(self, file_name="monthly_expense_by_category.xlsx"):
         """Pivot monthly expense by category and save to Excel."""
         filepath = os.path.join(EXPORT_DIR, file_name)
         pivot_df = self.metrics["monthly_expense_by_category"].unstack().fillna(0)
         pivot_df.to_excel(filepath)
         log.info(f"✅ Monthly expense by category saved to {filepath}")
+
 
     def print_wrapup(self):
         """Log a quick financial wrap-up (like Spotify Wrapped)."""

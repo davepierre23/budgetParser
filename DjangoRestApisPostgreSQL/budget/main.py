@@ -46,7 +46,8 @@ def main():
     report = FinancialReport(df)
     report.calculate_metrics()
     report.yearly_summary()
-    report.save_monthly_by_category()
+    report.save_monthly_expenses__by_category()
+    report.save_monthly_income__by_category()
     report.print_wrapup()
     report.get_unknowns(True)
 

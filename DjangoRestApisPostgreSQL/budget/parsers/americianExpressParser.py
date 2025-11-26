@@ -149,14 +149,15 @@ def createRow(row,ws,transactonDescriptCol) :
     amount = float(amount.split()[0])
 
   
-    
-    row = {
-    "Date":convertDate(transactonDate),
-    "Description":transactonDescript,
-    "Amount":amount    }
-    log.debug(row)
+    if(transactonDescript is not None):
+        row = {
+        "Date":convertDate(transactonDate),
+        "Description":transactonDescript,
+        "Amount":amount    }
+        log.debug(row)
+        return row
 
-    return row
+    return None
 # xls is americianEpress
 def canParse(full_path):
     return "Summary"  in full_path
