@@ -114,3 +114,17 @@ class Categorizer:
 
             print("✅ Finished processing all unknown transactions.\n")
             return df
+    def parse_description(self, description: str):
+        """
+        Parse description to remove location details (city, province).
+        Returns cleaned description, city, province.
+        """
+        pattern = r"(.*?)(?:\s+([A-Z]{2,}(?:\s+[A-Z]{2,})?)(?:,\s*([A-Z]{2}))?)?$"
+        match = re.match(pattern, description.strip())
+        if match:
+            clear_desc = match.group(1).strip()
+            city = match.group(2).strip() if match.group(2) else ""
+            province = match.group(3).strip() if match.group(3) else ""
+            return clear_desc, city, province
+        else:
+            return description.strip(), "", ""
