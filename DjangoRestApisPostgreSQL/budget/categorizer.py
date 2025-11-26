@@ -110,10 +110,10 @@ class Categorizer:
                 print(f"✔ Assigned '{description}' → {category}\n")
 
             # Save updated categories back to Python file
-            self.save_categories()
+        self.save_categories()
 
-            print("✅ Finished processing all unknown transactions.\n")
-            return df
+        print("✅ Finished processing all unknown transactions.\n")
+        return df
     def parse_description(self, description: str):
         """
         Parse description to remove location details (city, province).
