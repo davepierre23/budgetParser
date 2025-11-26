@@ -59,11 +59,12 @@ class FinancialReport:
         net_savings = total_income + total_expense  # expenses negative
 
         monthly_income_by_category = (
-            self.income
-            .groupby(self.income[MODEL_DATE].dt.month)[MODEL_AMOUNT]
+        self.income
+            .groupby([self.income[MODEL_DATE].dt.month, MODEL_CATEGORY])[MODEL_AMOUNT]
             .sum()
         )
 
+ 
     
         monthly_expense = (
             self.expenses.groupby(self.df[MODEL_DATE].dt.month)[MODEL_AMOUNT].sum()
@@ -130,16 +131,18 @@ class FinancialReport:
     def save_monthly_income__by_category(self, file_name="monthly_income_by_category.xlsx"):
         """Pivot monthly expense by category and save to Excel."""
         filepath = os.path.join(EXPORT_DIR, file_name)
-        pivot_df = self.metrics["monthly_income_by_category"]
+        pivot_df = self.metrics["monthly_income_by_category"].unstack().fillna(0).abs().T
         pivot_df.to_excel(filepath)
         log.info(f"✅ Monthly income by category saved to {filepath}")
 
     def save_monthly_expenses__by_category(self, file_name="monthly_expense_by_category.xlsx"):
         """Pivot monthly expense by category and save to Excel."""
         filepath = os.path.join(EXPORT_DIR, file_name)
-        pivot_df = self.metrics["monthly_expense_by_category"].unstack().fillna(0)
+        pivot_df = self.metrics["monthly_expense_by_category"].unstack().fillna(0).abs().T
         pivot_df.to_excel(filepath)
         log.info(f"✅ Monthly expense by category saved to {filepath}")
+
+    
 
 
     def print_wrapup(self):
