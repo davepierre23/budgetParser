@@ -1,4 +1,4 @@
-import logging
+﻿import logging
 import sys
 import pandas as pd
 
@@ -8,7 +8,7 @@ from config import DATA_DIR, MODEL_DATE,  MODEL_AMOUNT,  MODEL_DESCRIPTION,  MOD
 
 DATE='Date'
 AMOUNT='Amount'
-DESCRIPTION='Description' 
+DESCRIPTION='Sub-description' 
 TYPE='Type'
 NOTHING='NOTHING'
 MONTHLY_FEE=' MONTHLY FEES'
@@ -22,23 +22,68 @@ ignores=['DILAWRI ' ,'EQUITABLE BANK' ,'American Express'
 
 
 def canParse(full_path):
-    return  "pcbanking"  in full_path 
+    return  "Preferred_Package"  in full_path and full_path.endswith('.csv')
 
 def parse(name):
+    """
+    Parse a bank statement with columns:
+    ['Filter', 'Date', 'Description', 'Sub-description',
+     'Type of Transaction', 'Amount', 'Balance']
+    """
+
     df =pd.read_csv(name, encoding='unicode_escape')
-    if(df.shape[1]==3):
-        df.columns = [DATE,DESCRIPTION, AMOUNT]
-    elif(df.shape[1]==5):
-        df.columns = [DATE, AMOUNT,NOTHING,TYPE, DESCRIPTION]
 
-        df[DESCRIPTION].fillna(df[TYPE], inplace=True)
 
-        # drop the 'Nothing' column
-        df = df.drop(NOTHING, axis=1)
 
-    df[DATE] = pd.to_datetime(df[DATE])
-    df = df[df[AMOUNT] < 0]
-    return convertToModels(df)
+    # 1. Ensure required columns exist
+    required = ["Date", "Description", "Sub-description", "Amount"]
+    for col in required:
+        if col not in df.columns:
+            raise KeyError(f"Missing column: {col}")
+
+
+    # 2. Merge Description + Sub-description
+    df["FullDescription"] = (
+        df["Description"].fillna("") + " " +
+        df["Sub-description"].fillna("")
+    ).str.strip()
+
+    df = df.drop(columns=["Description"], errors="ignore")
+
+    # 3. Convert date column
+    df["Date"] = pd.to_datetime(df["Date"], errors="coerce")
+
+    # 4. Convert Amount to numeric
+    df["Amount"] = (
+        df["Amount"]
+        .replace('[\$,]', '', regex=True)
+        .astype(float)
+    )
+
+    # 5. Convert Balance to numeric if present
+    if "Balance" in df.columns:
+        df["Balance"] = (
+            df["Balance"]
+            .replace('[\$,]', '', regex=True)
+            .astype(float)
+        )
+
+    # 6. Optional rule: make expenses negative
+    # Example: Type of Transaction = "Debit" or "Withdrawal"
+    if "Type of Transaction" in df.columns:
+        df.loc[df["Type of Transaction"].str.contains("Debit|Withdrawal", case=False, na=False),
+               "Amount"] *= -1
+
+    # 7. Rename to standardized model
+    df = df.rename(columns={
+        "Date": MODEL_DATE,
+        "FullDescription": MODEL_DESCRIPTION,
+        "Amount": MODEL_AMOUNT
+    })
+    df =df[[MODEL_DATE, MODEL_DESCRIPTION, MODEL_AMOUNT]]
+    df[MODEL_ORIGIN] = 'SCOTIA'
+    log.info(f"Parsed {len(df)} rows from {df}")
+    return df
 
 
 def parseByMonth(name=""):
@@ -116,5 +161,5 @@ def main(name):
 
 
 if __name__ == "__main__":
-    main(DATA_DIR+"pcbanking.csv")
+    main(DATA_DIR+"Preferred_Package_9485_112625.csv")
     

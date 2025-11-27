@@ -137,7 +137,8 @@ categories = {
         "TIM HORTONS",
         "TST-MARBLE SLAB CREAME",
         "WENDY",
-        "Wild Wing"
+        "Wild Wing",
+        "pos purchase Fpos George'S Meat Shop  Ottaw"
     ],
     "Clothing": [
         "ADIDAS",
@@ -313,7 +314,8 @@ categories = {
     ],
     "Income": [
         "Acting / Appointment Pay",
-        "Basic Pay"
+        "Basic Pay",
+        "payroll deposit Maison Accueil-Sagesse"
     ],
     "Gas": [
         "CIRCLEK",

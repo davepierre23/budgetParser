@@ -11,7 +11,8 @@ from parsers import (
     tangerineParser,
     wealthSimple,
     wiseParser,
-    tangerineCheque
+    tangerineCheque,
+    Preferred__Package
 )
 from state_manager import update_last_download, should_import, get_new_transactions
 
@@ -25,7 +26,8 @@ def load_parsers():
         tangerineParser,
         wealthSimple,
         wiseParser,
-        tangerineCheque
+        tangerineCheque, 
+        Preferred__Package
     ]
 
 
