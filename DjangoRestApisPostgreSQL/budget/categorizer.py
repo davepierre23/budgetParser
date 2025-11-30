@@ -60,12 +60,12 @@ class Categorizer:
         """
         Walk the user through unknown transactions.
         Adds new patterns immediately so next rows auto-categorize.
+        Allows creation of new categories.
         """
 
-        # REPEATED UNTIL NO UNKNOWN LEFT
         while True:
 
-            # recalc unknowns on each loop
+            # Refresh unknowns
             unknowns = df[df["Category"] == "Unknown"]
 
             if unknowns.empty:
@@ -76,7 +76,6 @@ class Categorizer:
 
             category_names = list(self.categories.keys())
 
-            # Go one by one
             for idx, row in unknowns.iterrows():
                 description = row["Description"]
                 clear_desc, city, province = self.parse_description(description)
@@ -89,47 +88,75 @@ class Categorizer:
                 print(f"Source File:  {row['source_file']}")
                 print()
 
-                # Show category list
+                # Show list of existing categories
                 for i, cat in enumerate(category_names, 1):
                     print(f"{i}. {cat}")
 
-                choice = input("\nSelect category number (ENTER to skip): ")
+                # Add "Create New Category" option
+                create_index = len(category_names) + 1
+                print(f"{create_index}. ➕ Create New Category")
+
+                choice = input("\nSelect a category number (ENTER to skip): ")
 
                 if not choice.strip():
                     print("⏩ Skipped.\n")
                     continue
 
                 try:
-                    category = category_names[int(choice) - 1]
+                    choice_num = int(choice)
                 except:
-                    print("❌ Invalid choice. Skipped.\n")
+                    print("❌ Invalid input. Skipped.\n")
                     continue
 
-                # ---- Update row ----
+                # ---- Option: Create New Category ----
+                if choice_num == create_index:
+                    new_category = input("\nEnter the name for your new category: ").strip()
+
+                    if not new_category:
+                        print("❌ Invalid category name. Skipped.\n")
+                        continue
+
+                    print(f"➕ Creating new category: {new_category}")
+
+                    # Add new category to categories dictionary
+                    self.categories[new_category] = []
+
+                    category = new_category
+
+                    # Add menu entry
+                    category_names.append(new_category)
+
+                # ---- Use existing category ----
+                else:
+                    if choice_num < 1 or choice_num > len(category_names):
+                        print("❌ Invalid category number. Skipped.\n")
+                        continue
+
+                    category = category_names[choice_num - 1]
+
+                # ---- Update DataFrame ----
                 df.at[idx, "Category"] = category
                 df.at[idx, "CategorySource"] = "Manual"
 
-                # ---- Update rule immediately ----
+                # ---- Save keyword pattern ----
                 if clear_desc not in self.categories[category]:
                     self.categories[category].append(clear_desc)
                     self.categories[category] = sorted(set(self.categories[category]))
 
-                    print(f"✔ Added keyword rule: '{clear_desc}' → {category}")
+                    print(f"✔ Added rule: '{clear_desc}' → {category}")
 
-                    # ---- SAVE RULE RIGHT AWAY ----
+                    # Save categories instantly
                     self.save_categories()
 
-                    # ---- RE-APPLY automatic categorizer to entire DF ----
+                    # Re-apply auto-categorization
                     df = self.apply(df, "Description", "Category")
+                    print("🔄 Re-applied automatic rules.\n")
 
-                    print("🔄 Re-applied automatic rules with new keyword.\n")
-                    # break to rebuild unknown set fresh
-                    break
-
-            # loop will re-check unknowns again
+                    break  # Restart loop with new unknown list
 
         print("✅ Finished all unknowns.")
         return df
+
 
     def parse_description(self, description: str):
         """
