@@ -79,7 +79,8 @@ class Categorizer:
             for idx, row in unknowns.iterrows():
                 description = row["Description"]
                 clear_desc, city, province = self.parse_description(description)
-
+                clear_desc = self.clean_pattern(clear_desc)
+                
                 print("-" * 70)
                 print(f"Date:         {row['Date']}")
                 print(f"Description:  {clear_desc}")
@@ -120,7 +121,6 @@ class Categorizer:
 
                     # Add new category to categories dictionary
                     self.categories[new_category] = []
-
                     category = new_category
 
                     # Add menu entry
@@ -138,24 +138,52 @@ class Categorizer:
                 df.at[idx, "Category"] = category
                 df.at[idx, "CategorySource"] = "Manual"
 
-                # ---- Save keyword pattern ----
-                if clear_desc not in self.categories[category]:
-                    self.categories[category].append(clear_desc)
-                    self.categories[category] = sorted(set(self.categories[category]))
+                # ----------------------------------------------------
+                # 🔥 NEW KEYWORD AUTOMATION PROCESS
+                # ----------------------------------------------------
+                print(f"\nSuggested keyword for automation: '{clear_desc}'")
 
-                    print(f"✔ Added rule: '{clear_desc}' → {category}")
+                keyword_action = input(
+                    "Choose: (A)ccept keyword, (R)eplace with custom keyword, (M)anual only: "
+                ).strip().upper()
 
-                    # Save categories instantly
-                    self.save_categories()
+                keyword_to_save = None
 
-                    # Re-apply auto-categorization
-                    df = self.apply(df, "Description", "Category")
-                    print("🔄 Re-applied automatic rules.\n")
+                if keyword_action == "A":
+                    keyword_to_save = clear_desc
+                    print(f"✔ Accepted keyword: '{keyword_to_save}'")
 
-                    break  # Restart loop with new unknown list
+                elif keyword_action == "R":
+                    custom_kw = input("Enter your custom keyword: ").strip()
+                    if custom_kw:
+                        keyword_to_save = custom_kw
+                        print(f"✔ Custom keyword saved: '{keyword_to_save}'")
+                    else:
+                        print("❌ Invalid custom keyword. Skipping automation.")
+
+                else:
+                    print("ℹ Manual only: No keyword automation.\n")
+
+                # ---- Save keyword to dictionary (if any) ----
+                if keyword_to_save:
+                    if keyword_to_save not in self.categories[category]:
+                        self.categories[category].append(keyword_to_save)
+                        self.categories[category] = sorted(set(self.categories[category]))
+
+                        print(f"✔ Added rule: '{keyword_to_save}' → {category}")
+
+                        # Save categories instantly
+                        self.save_categories()
+
+                        # Re-apply auto-categorization
+                        df = self.apply(df, "Description", "Category")
+                        print("🔄 Re-applied automatic rules.\n")
+
+                break  # Restart loop with updated unknown list
 
         print("✅ Finished all unknowns.")
         return df
+
 
 
     def parse_description(self, description: str):
@@ -172,3 +200,39 @@ class Categorizer:
             return clear_desc, city, province
         else:
             return description.strip(), "", ""
+        
+
+    def clean_pattern(self, desc: str):
+        """
+        Cleans a transaction description for keyword matching.
+        Removes bank noise, prefixes, and trailing numbers.
+        """
+        if not isinstance(desc, str):
+            return ""
+
+        desc = desc.upper().strip()
+
+        # Remove common prefixes
+        prefixes = [
+            "BILL PAYMENT ",
+            "MB-",
+            "MB*",
+            "POS ",
+            "DEBIT ",
+            "PURCHASE ",
+            "PAYMENT ",
+            "E-TRANSFER ",
+            "WITHDRAWAL ",
+        ]
+
+        for p in prefixes:
+            if desc.startswith(p):
+                desc = desc[len(p):]
+
+        # Remove trailing numbers
+        desc = re.sub(r"\d+$", "", desc).strip()
+
+        # Replace multiple spaces with one
+        desc = re.sub(r"\s+", " ", desc)
+
+        return desc
