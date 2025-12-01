@@ -1,6 +1,6 @@
 ﻿import os
 import pandas as pd
-from config import DATA_DIR, WORK_FILE, MODEL_DATE, YEAR ,MODEL_DESCRIPTION, MODEL_AMOUNT, MODEL_SOURCE
+from config import DATA_DIR, WORK_FILE, MODEL_DATE, YEAR ,MODEL_DESCRIPTION, MODEL_AMOUNT, MODEL_SOURCE, MODEL_CLEAN_DESCRIPT
 from categorizer import Categorizer
 from parsers.ml_model import train_model, predict_unknowns
 from parsers import (
@@ -84,10 +84,13 @@ def process_files():
         df = pd.concat(parsed_data, ignore_index=True)
         df[MODEL_DATE] = pd.to_datetime(df[MODEL_DATE])
 
+        df[MODEL_CLEAN_DESCRIPT] = df[MODEL_DESCRIPTION].apply(clean_pattern)
+
+
         # ✅ Deduplicate across all parsed files
         before_count = len(df)
         df = df.drop_duplicates(
-            subset=[MODEL_DATE, MODEL_DESCRIPTION,MODEL_AMOUNT, MODEL_SOURCE],
+            subset=[MODEL_DATE, MODEL_DESCRIPTION,MODEL_CLEAN_DESCRIPT,MODEL_AMOUNT, MODEL_SOURCE],
             keep="first"
         )
         after_count = len(df)
@@ -95,3 +98,51 @@ def process_files():
 
     # ✅ Keep only rows from this year
     return df[df[MODEL_DATE].dt.year == YEAR]
+
+
+def clean_pattern(text: str) -> str:
+    """
+    Cleans a transaction description so it becomes a stable keyword.
+    Removes noise like:
+    - numbers
+    - store IDs (#1234)
+    - city/province codes
+    - extra spaces
+    Keeps only keywords that are useful for categorization.
+    """
+
+    if not text or not isinstance(text, str):
+        return ""
+
+    t = text.upper()
+
+    # Remove extra spaces
+    t = t.replace("\n", " ").strip()
+
+    # Remove punctuation
+    import re
+    t = re.sub(r"[^A-Z0-9\s]", " ", t)
+
+    # Remove numbers (avoid store numbers like COSTCO #1244)
+    t = re.sub(r"\d+", " ", t)
+
+    # Remove province/city noise — OPTIONAL LIST, YOU CAN EXPAND
+    remove_words = {
+        "CANADA", "ONTARIO", "ONT", "ON", "QC", "QUEBEC",
+        "AB", "BC", "NS", "NB", "SK", "MB", "OPOS", "ORLEA",
+        "CA", "USA", "US", "FPOS", "POS", "PURCHASE", "OTTAW" , "MONTR"
+    }
+
+    parts = [p for p in t.split() if p not in remove_words]
+
+    # If cleaning deletes everything → fall back to original
+    if not parts:
+        return text.upper().strip()
+
+    # Join cleaned text
+    cleaned = " ".join(parts)
+
+    # Collapse multiple spaces
+    cleaned = re.sub(r"\s+", " ", cleaned).strip()
+
+    return cleaned

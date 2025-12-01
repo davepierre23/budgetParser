@@ -2,7 +2,7 @@
 import shutil
 import pandas as pd
 
-from config import WORK_FILE, EXPORT_DIR, MODEL_DESCRIPTION, MODEL_CATEGORY
+from config import WORK_FILE, EXPORT_DIR, CATEGORY_FILE,MODEL_DESCRIPTION, MODEL_CATEGORY, MODEL_CLEAN_DESCRIPT
 from categories import categories   # ✅ keep categories in categories.py
 from processing import process_files
 from categorizer import Categorizer
@@ -33,12 +33,12 @@ def main():
     df = process_files()
 
     # Rule-based categorization
-    cat = Categorizer(categories)
-    df = cat.apply(df, MODEL_DESCRIPTION, MODEL_CATEGORY)
+    cat = Categorizer(categories, CATEGORY_FILE)
+    df = cat.apply(df, MODEL_CLEAN_DESCRIPT, MODEL_CATEGORY)
     df = cat.interactive_categorizer(df)
 
     # ML-based categorization for unknowns
-    model, vectorizer = train_model(df, MODEL_DESCRIPTION, MODEL_CATEGORY)
+    model, vectorizer = train_model(df, MODEL_CLEAN_DESCRIPT, MODEL_CATEGORY)
     # if model:
     #     df = predict_unknowns(df, model, vectorizer, MODEL_DESCRIPTION, MODEL_CATEGORY)
 

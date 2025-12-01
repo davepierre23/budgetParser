@@ -1,6 +1,8 @@
 ﻿import json
 import pandas as pd
 import re
+import string
+from config import MODEL_DESCRIPTION, MODEL_CLEAN_DESCRIPT, MODEL_CATEGORY
 
 class Categorizer:
     def __init__(self, categories, categories_path="categories.py"):
@@ -31,7 +33,7 @@ class Categorizer:
     # --------------------------
     # APPLY TO DATAFRAME
     # --------------------------
-    def apply(self, df, description_col, category_col="Category"):
+    def apply(self, df, description_col, category_col=MODEL_CATEGORY):
         print(df)
         results = df[description_col].apply(self.categorize_with_source)
         print(f"Categorized {results.size} transactions using rule-based categorization.")
@@ -66,7 +68,7 @@ class Categorizer:
         while True:
 
             # Refresh unknowns
-            unknowns = df[df["Category"] == "Unknown"]
+            unknowns = df[df[MODEL_CATEGORY] == "Unknown"]
 
             if unknowns.empty:
                 print("🎉 No unknown transactions remaining.")
@@ -77,12 +79,12 @@ class Categorizer:
             category_names = list(self.categories.keys())
 
             for idx, row in unknowns.iterrows():
-                description = row["Description"]
-                clear_desc, city, province = self.parse_description(description)
-                clear_desc = self.clean_pattern(clear_desc)
-                
+                clear_desc = row[MODEL_CLEAN_DESCRIPT]
+                description =row[MODEL_DESCRIPTION]
+
                 print("-" * 70)
                 print(f"Date:         {row['Date']}")
+                print(f"Original Description:  {description}")
                 print(f"Description:  {clear_desc}")
                 print(f"Amount:       {row['Amount']}")
                 print(f"Origin:       {row['Origin']}")
@@ -110,6 +112,7 @@ class Categorizer:
                     continue
 
                 # ---- Option: Create New Category ----
+
                 if choice_num == create_index:
                     new_category = input("\nEnter the name for your new category: ").strip()
 
@@ -135,7 +138,7 @@ class Categorizer:
                     category = category_names[choice_num - 1]
 
                 # ---- Update DataFrame ----
-                df.at[idx, "Category"] = category
+                df.at[idx, MODEL_CATEGORY] = category
                 df.at[idx, "CategorySource"] = "Manual"
 
                 # ----------------------------------------------------
@@ -176,7 +179,7 @@ class Categorizer:
                         self.save_categories()
 
                         # Re-apply auto-categorization
-                        df = self.apply(df, "Description", "Category")
+                        df = self.apply(df, MODEL_CLEAN_DESCRIPT, MODEL_CATEGORY)
                         print("🔄 Re-applied automatic rules.\n")
 
                 break  # Restart loop with updated unknown list
@@ -202,37 +205,3 @@ class Categorizer:
             return description.strip(), "", ""
         
 
-    def clean_pattern(self, desc: str):
-        """
-        Cleans a transaction description for keyword matching.
-        Removes bank noise, prefixes, and trailing numbers.
-        """
-        if not isinstance(desc, str):
-            return ""
-
-        desc = desc.upper().strip()
-
-        # Remove common prefixes
-        prefixes = [
-            "BILL PAYMENT ",
-            "MB-",
-            "MB*",
-            "POS ",
-            "DEBIT ",
-            "PURCHASE ",
-            "PAYMENT ",
-            "E-TRANSFER ",
-            "WITHDRAWAL ",
-        ]
-
-        for p in prefixes:
-            if desc.startswith(p):
-                desc = desc[len(p):]
-
-        # Remove trailing numbers
-        desc = re.sub(r"\d+$", "", desc).strip()
-
-        # Replace multiple spaces with one
-        desc = re.sub(r"\s+", " ", desc)
-
-        return desc

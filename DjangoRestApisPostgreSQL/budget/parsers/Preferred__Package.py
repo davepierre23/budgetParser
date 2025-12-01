@@ -43,10 +43,9 @@ def parse(name):
 
 
     # 2. Merge Description + Sub-description
-    df["FullDescription"] = (
-        df["Description"].fillna("") + " " +
-        df["Sub-description"].fillna("")
-    ).str.strip()
+    df["FullDescription"] = df["Sub-description"].fillna("").str.strip()
+    df["FullDescription"] = df["Description"].str.strip() + " " + df["FullDescription"]
+    
 
     df = df.drop(columns=["Description"], errors="ignore")
 
@@ -67,12 +66,6 @@ def parse(name):
             .replace('[\$,]', '', regex=True)
             .astype(float)
         )
-
-    # 6. Optional rule: make expenses negative
-    # Example: Type of Transaction = "Debit" or "Withdrawal"
-    if "Type of Transaction" in df.columns:
-        df.loc[df["Type of Transaction"].str.contains("Debit|Withdrawal", case=False, na=False),
-               "Amount"] *= -1
 
     # 7. Rename to standardized model
     df = df.rename(columns={

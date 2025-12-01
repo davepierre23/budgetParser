@@ -8,6 +8,7 @@ categories = {
     ],
     "Groceries": [
         "68044 MACS CONV. STORES MANOTICK",
+        "ADONIS",
         "BULK BARN",
         "CANADIAN TIRE",
         "CHAP CHAP SNACKS Ottawa",
@@ -18,26 +19,32 @@ categories = {
         "FOOD BASICS",
         "FRESH",
         "FRESHCO",
+        "GEORGE S MEAT SHOP",
         "HALIBUT HOUSE",
         "LOBLAWS",
         "MARKET",
         "METRO",
         "NO FRILLS",
+        "NSEYA S",
         "NSEYA'S",
         "REVOLUTIONN",
         "REXALL",
+        "RHEMA S",
+        "RHEMA#S AFRICAN & CA",
         "SOBEYS",
         "SUPERMARKET",
         "Shoppers Drug Mart",
         "T&T",
         "TooGoodT",
         "WAL*MART",
+        "WALMART",
         "WALMART.CA",
         "YIG"
     ],
     "Restaurants": [
         "-Marble Slab JONNY CANUCK'S",
         "A&W",
+        "ALISSAR LEBANESE",
         "AZTEC",
         "BAKERY",
         "BARBURRITO",
@@ -68,15 +75,19 @@ categories = {
         "DOORDASH",
         "DOUGHNUTS",
         "EAST SIDE MARIO",
+        "EUREST",
         "FAIRMONT CHATEAU",
         "FAIRMONT CHATEAU LAURIE",
+        "FAMOUS WOK",
         "FAT BASTARD BURRITO",
+        "FPOS MR. PRETZELS ORLEA",
         "FRIES",
         "FRUIT",
         "GOOOD&TASTY",
         "GYUBEE",
         "HARVEY",
         "HEY KITCHEN",
+        "HILL BAKEHOUSE",
         "JACK ASTOR'S",
         "JOLLIBEE-",
         "JUICE DUDEZ",
@@ -87,6 +98,7 @@ categories = {
         "MANDARIN",
         "MARY BROWN'S",
         "MAVERICK'S",
+        "MCDONALD",
         "MCDONALD'S",
         "MCDONALDS",
         "MEET NOODLE",
@@ -94,10 +106,13 @@ categories = {
         "MIKE DEAN'S",
         "MILKMAN",
         "MISS MOLLY",
+        "MR PRETZELS",
+        "MR. PRETZELS",
         "MUCHO BURRITO",
         "NICKY",
         "NICKYPOPEYES",
         "NOM NOM",
+        "OSTERIA ITALIA",
         "PITA BELL KABAB",
         "PIZZA",
         "PIZZERIA",
@@ -117,6 +132,7 @@ categories = {
         "SKIPTHEDISHES",
         "SOUL STONE",
         "SP GOOD GRAZES",
+        "SPICE WORLD",
         "SQ *PANCHO'S",
         "SQ *SEE ME SPARKLE",
         "ST. LOUIS BAR & GRILL",
@@ -143,12 +159,19 @@ categories = {
     "Clothing": [
         "ADIDAS",
         "BOATHOUSE",
+        "CHEMIN DE MODE",
+        "CLAIRE FRANCE",
         "FAIRWEATHER",
+        "FERICHM",
         "H&M",
+        "HUDSON S BAY",
         "LEZE THE LABEL",
         "LIBRAIR UNVDOTTAWA 9    OTTAWA",
+        "MICA S",
+        "MICA'S",
         "OLD NAVY",
         "OVO",
+        "PAYPAL LAURA ML",
         "SHEIN",
         "SPORT CHEK",
         "SPORTS",
@@ -157,6 +180,8 @@ categories = {
         "THREADS TAILORS",
         "Tip Top",
         "VALUE VILLAGE",
+        "WINNERS HOMESENSE",
+        "WINNERS/HOMESENSE",
         "ZARA"
     ],
     "Entertainment": [
@@ -252,15 +277,20 @@ categories = {
     ],
     "Online Shopping": [
         "AFROBLAST",
+        "ALIPAY",
         "AMAZON",
         "AMZN",
         "APPLE",
+        "GAMBIT",
         "HIVEMAPPER",
         "JEWELLERS",
+        "KIDDIE KOBBLER",
         "LEGO",
         "MY USADDRESS",
         "SIMPLYMODBOX",
-        "SNAPLII"
+        "SNAPLII",
+        "TOTALDRIVE",
+        "ZEFITBLAD.COM"
     ],
     "Transportation": [
         "BUSBUD",
@@ -277,6 +307,8 @@ categories = {
     "Doctors/Dental/Vision": [
         "ACE OF SPADES",
         "APPLE'S CROWN",
+        "CHILDREN S HOSPITAL",
+        "CHU SAINTE JUSTINE",
         "CLEARVIEW",
         "Echo",
         "HUNTER CHIROPRACTIC",
@@ -288,17 +320,26 @@ categories = {
     "Personal Care": [
         "BATH & BODY WORKS",
         "CLORE",
+        "DRY CLEANER",
+        "G G GOLDEN HAIR",
+        "G&G GOLDEN HAIR",
+        "Hera Beauty",
         "MONAT",
         "MONTEGO",
-        "NANCY'S NAILS AND LASHE"
+        "NANCY'S NAILS AND LASHE",
+        "SALON AND SPA",
+        "TETIANA ZINCHENKO"
     ],
     "Gym": [
         "FIT4LESS",
         "OTTAWACITY",
         "SHOWCASE",
-        "SP CROSSROPE"
+        "SP CROSSROPE",
+        "ZEFITBLAD"
     ],
     "Home Goods": [
+        "ACCENT DECOR",
+        "ATOMY",
         "BEST BUY",
         "CANADIANTIRE",
         "CDN TIRE",
@@ -310,11 +351,17 @@ categories = {
         "MICHAELS #3948 MICHAELS ORLEANS",
         "PANDABUY",
         "QUICK PICK",
+        "SP BENTLEY",
+        "THE HOME DEPOT",
         "WAL-MART"
     ],
     "Income": [
         "Acting / Appointment Pay",
         "Basic Pay",
+        "MAISON ACCUEIL SAGESSE",
+        "PAYROLL DEPOSIT COUVENT MONT ST JOSEPH",
+        "PAYROLL DEPOSIT SARSFIELD COLONIAL HOME",
+        "SARSFIELD COLONIAL HOME",
         "payroll deposit Maison Accueil-Sagesse"
     ],
     "Gas": [
@@ -341,10 +388,24 @@ categories = {
         "The Aqua Life Swim Sch"
     ],
     "Miscellaneous Payment": [
+        "ABM WITHDRAWAL",
+        "AICAMERCHAN",
+        "CREDIT MEMO SENIORS' DISCOUNT",
+        "FEELON DESIGN SRL",
+        "FPOS *NPO7W5D52R48KX",
+        "NPO W D R KX",
+        "NZ DQ KODYMD",
+        "OPOS WU",
+        "OPOS WU * 800-",
+        "PAY PER USE ODP PLAN",
+        "PAYPAL XIJOCTJ",
+        "REFUNDED",
         "Returned Payment",
-        "REFUNDED"
+        "SENIORS DISCOUNT",
+        "WU"
     ],
     "Miscellaneous Charges": [
+        "BRIDGE",
         "Dishonoured Payment",
         "HOTEL PONTIAC",
         "IMPARK00110003U",
@@ -352,13 +413,48 @@ categories = {
         "MONTHLY FEES",
         "NCC- VINCENT MASSEY PA",
         "NSF",
+        "OVERDRAFT INTEREST",
+        "OVERDRAFT PROTECT. FEE PAY-PER-USE ODP PLAN",
         "Opl/Bpo",
         "PARKING",
         "PARKSMART",
         "PAYBYPHONE",
+        "POLICE",
         "PREMIUM",
         "Place D'orlans",
-        "BRIDGE",
+        "SERVICE CHARGE",
         "TOLL"
+    ],
+    "Investment": [
+        "RRSP"
+    ],
+    "Loan": [
+        "CRA (REVENUE)-2024 TAX RETURN",
+        "CRA REVENUE TAX RETURN"
+    ],
+    "Credit Card": [
+        "CREDIT CARD LOC PAY",
+        "TRIANGLE MASTERCARD"
+    ],
+    "Insurance": [
+        "INSURANCE COWAN",
+        "INSURANCE SUN LIFE",
+        "SUN LIFE",
+        "SUN LIFE PERSONAL INSURANCE"
+    ],
+    "Home Maintenance": [
+        "GROUPE VERTDURE"
+    ],
+    "Pharmacy": [
+        "FPOS ST. MARY HEALTH CENTOTTAW",
+        "JEAN COUTU",
+        "ORLEANS MEDICAL CENTRE",
+        "ST MARY HEALTH CENTOTTAW"
+    ],
+    "WITHDRAWAL": [
+        "WITHDRAWAL"
+    ],
+    "DEPOSIT": [
+        "DEPOSIT"
     ]
 }
