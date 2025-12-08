@@ -1,6 +1,6 @@
 ﻿class GiftCardDealChecker:
     def __init__(self):
-        # 🎁 Your deal list
+        # 🎁 Your gift card deals
         self.deals = {
             "APPLEBEES": "Buy a $50 gift card → Get a $10 bonus card",
             "BOOSTER JUICE": "Buy a $30 gift card → Get a free smoothie or acai bowl",
@@ -10,7 +10,7 @@
             "DENNY": "Buy a $25 gift card → Get a $5 off coupon",
             "EAST SIDE MARIO": "Buy a $50 gift card → Get a free Jr. Chicken Parm",
             "HARVEY": "Buy a $25 gift card → Get a free Original Burger",
-            "MCDONALD": "Buy a $25 gift card → Get a free Big Mac or McChicken",
+            "MCDONALD S": "Buy a $25 gift card → Get a free Big Mac or McChicken",
             "MONTANA": "Buy a $50 gift card → Get a free rib taster plate",
             "MOXIE": "Buy a $100 gift card → Get a $20 gift card",
             "NEW YORK FRIES": "Buy a $25 gift card → Get a free snack-size poutine",
@@ -21,33 +21,28 @@
             "ULTIMATE DINING CARD": "Buy a $50 gift card → Get a $50 bonus card",
         }
 
-        # Auto-generate keyword list from store names
-        self.keywords = {store: [store] for store in self.deals}
-
     def scan(self, df, description_col="CleanDescription", amount_col="Amount"):
-        """
-        Returns:
-          {
-            "SUBWAY": { "total": 210.45, "deal": "Buy a $50 gift card → Get a free footlong" },
-            ...
-          }
-        """
         results = {}
 
-        for store, keywords in self.keywords.items():
-            mask = False
+        # Convert store names to list for iteration
+        store_list = list(self.deals.keys())
 
-            # Build OR mask
-            for kw in keywords:
-                mask = mask | df[description_col].str.contains(kw, case=False, na=False)
+        for _, row in df.iterrows():
+            desc = str(row[description_col]).upper()
+            amount = row[amount_col]
 
-            total_spent = df.loc[mask, amount_col].sum()
+            for store in store_list:
+                if store in desc:
+                    if store not in results:
+                        results[store] = {
+                            "total": 0,
+                            "deal": self.deals[store]
+                        }
+                    results[store]["total"] += amount
 
-            if total_spent > 0:
-                results[store] = {
-                    "total": round(total_spent, 2),
-                    "deal": self.deals[store]
-                }
+        # Round totals
+        for store in results:
+            results[store]["total"] = round(results[store]["total"], 2)
 
         return results
 
