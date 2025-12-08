@@ -128,9 +128,9 @@ def clean_pattern(text: str) -> str:
 
     # Remove province/city noise — OPTIONAL LIST, YOU CAN EXPAND
     remove_words = {
-        "CANADA", "ONTARIO", "ONT", "ON", "QC", "QUEBEC",
-        "AB", "BC", "NS", "NB", "SK", "MB", "OPOS", "ORLEA",
-        "CA", "USA", "US", "FPOS", "POS", "PURCHASE", "OTTAW" , "MONTR"
+        "CANADA", "ONTARIO", "ONT", "ON", "QC", "QUEBEC", "OTTAWA", "VANCOUVER"
+        "AB", "BC", "NS", "NB", "SK", "MB", "OPOS", "ORLEA", "ORLEANS", "SP",
+        "CA", "USA", "US", "FPOS", "POS", "PURCHASE", "OTTAW" , "MONTR", "TORONTO"
     }
 
     parts = [p for p in t.split() if p not in remove_words]

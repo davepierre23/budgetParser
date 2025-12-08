@@ -2,13 +2,14 @@
 import shutil
 import pandas as pd
 
-from config import WORK_FILE, EXPORT_DIR, CATEGORY_FILE,MODEL_DESCRIPTION, MODEL_CATEGORY, MODEL_CLEAN_DESCRIPT
+from config import WORK_FILE, EXPORT_DIR, CATEGORY_FILE,MODEL_DESCRIPTION, MODEL_CATEGORY, MODEL_AMOUNT, MODEL_CLEAN_DESCRIPT
 from categories import categories   # ✅ keep categories in categories.py
 from processing import process_files
 from categorizer import Categorizer
 from parsers.ml_model import train_model, predict_unknowns
 from reports import FinancialReport
 from state_manager import update_last_run
+from giftcard_checker import GiftCardDealChecker
 
 
 def clean_exports():
@@ -41,6 +42,11 @@ def main():
     model, vectorizer = train_model(df, MODEL_CLEAN_DESCRIPT, MODEL_CATEGORY)
     # if model:
     #     df = predict_unknowns(df, model, vectorizer, MODEL_DESCRIPTION, MODEL_CATEGORY)
+
+    # Gift card deal checker
+    deal_checker = GiftCardDealChecker()
+    results = deal_checker.scan(df, description_col=MODEL_CLEAN_DESCRIPT, amount_col=MODEL_AMOUNT)
+    deal_checker.print_results(results)
 
     # Generate reports
     report = FinancialReport(df)
