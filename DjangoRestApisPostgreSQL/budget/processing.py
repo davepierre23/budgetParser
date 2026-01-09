@@ -12,7 +12,8 @@ from parsers import (
     wealthSimple,
     wiseParser,
     tangerineCheque,
-    Preferred__Package
+    Preferred__Package, 
+    bmoParser
 )
 from state_manager import update_last_download, should_import, get_new_transactions
 
@@ -27,7 +28,8 @@ def load_parsers():
         wealthSimple,
         wiseParser,
         tangerineCheque, 
-        Preferred__Package
+        Preferred__Package,
+        bmoParser
     ]
 
 

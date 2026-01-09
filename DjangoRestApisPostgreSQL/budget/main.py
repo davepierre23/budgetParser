@@ -9,7 +9,6 @@ from categorizer import Categorizer
 from parsers.ml_model import train_model, predict_unknowns
 from reports import FinancialReport
 from state_manager import update_last_run
-from giftcard_checker import GiftCardDealChecker
 
 
 def clean_exports():

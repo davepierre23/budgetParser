@@ -5,7 +5,7 @@ BASE_DIR = os.path.dirname(__file__)
 EXPORT_DIR = os.path.join(BASE_DIR, "exports")
 
 DATA_DIR = Path(r"C:\Users\davep\Documents\budgetParser\budgetParser\DjangoRestApisPostgreSQL\budget\data")
-#DATA_DIR = Path(r"C:\Users\davep\Downloads\ParentsBankStatement")
+DATA_DIR = Path(r"C:\Users\davep\Downloads\ParentsBankStatement")
 CATEGORY_FILE= Path(r"C:\Users\davep\Documents\budgetParser\budgetParser\DjangoRestApisPostgreSQL\budget\categories.py")
 WORK_FILE = os.path.join(EXPORT_DIR, "my_data2025.csv") 
 YEAR = 2025

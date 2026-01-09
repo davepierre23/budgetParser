@@ -21,6 +21,7 @@ Create a virtual environment:python -m venv venv
 After creating it, you need to activate it:On macOS/Linux:source venv/bin/activate
 On Windows (Command Prompt or PowerShell):venv\Scripts\activate
 PowerShell Note: If you get an error message saying ...running scripts is disabled on this system..., your system's execution policy is blocking the script. To fix this for your current session only, run the following command first, and then try activating the environment again:
+.\budgetParser\DjangoRestApisPostgreSQL\budget\venv\Scripts\activate  
 
 Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope Process
 Install the required packages:Make sure your virtual environment is activated before running this command. You should see (venv) at the start of your command prompt line.pip install -r requirements.txt
