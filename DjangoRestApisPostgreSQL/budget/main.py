@@ -9,6 +9,7 @@ from categorizer import Categorizer
 from parsers.ml_model import train_model, predict_unknowns
 from reports import FinancialReport
 from state_manager import update_last_run
+from giftcard_checker import GiftCardDealChecker
 
 
 def clean_exports():
@@ -53,6 +54,8 @@ def main():
     report.yearly_summary()
     report.save_monthly_expenses__by_category()
     report.save_monthly_income__by_category()
+    report.save_monthly_expenses_by_description()
+    report.save_monthly_income_by_description()
     report.print_wrapup()
     report.get_unknowns(True)
 

@@ -28,6 +28,7 @@ categories = {
         "NO FRILLS",
         "NSEYA S",
         "NSEYA'S",
+        "PUBLIX",
         "REVOLUTIONN",
         "REXALL",
         "RHEMA S",
@@ -53,6 +54,7 @@ categories = {
         "BARBURRITO",
         "BBQ",
         "BIG BONE BBQ",
+        "BOOSTER JUICE",
         "BOSTON PIZZA",
         "BRIG",
         "BROADWAY",
@@ -72,6 +74,7 @@ categories = {
         "COCO FRESH TEA",
         "COFFEE AND BAR",
         "CORA",
+        "CRAFT LANSDOWNE PARK",
         "Carleton Web",
         "Chatime",
         "DAIRY QUEEN",
@@ -97,10 +100,12 @@ categories = {
         "HARVEY",
         "HEY KITCHEN",
         "HILL BAKEHOUSE",
+        "HOUSE OF GOURMET",
         "JACK ASTOR'S",
         "JOLLIBEE-",
         "JUICE DUDEZ",
         "KREME NIDO",
+        "LA BONITA GLOUCESTER",
         "LITTLE CAESARS",
         "LS Maison ODDO",
         "LUNCHBOX",
@@ -134,6 +139,7 @@ categories = {
         "ROYAL OAK",
         "SAVEURS EPICERIE",
         "SAVEURS EPICERIEUBER EATS",
+        "SEAU DE CRABE",
         "SEE ME SPARKLEMOXIES",
         "SEVEN ELEVEN",
         "SHAKER",
@@ -184,6 +190,7 @@ categories = {
         "HUDSON S BAY",
         "LEZE THE LABEL",
         "LIBRAIR UNVDOTTAWA 9    OTTAWA",
+        "MADJESTER DESIGNS CHICKAMAUGA",
         "MICA S",
         "MICA'S",
         "OLD NAVY",
@@ -267,14 +274,15 @@ categories = {
         "OIL CHANGERS"
     ],
     "Travel": [
-        "AIRCANADA",
         "AIRBNB",
+        "AIRCANADA",
         "AIRLINES",
         "CAA NORTH",
         "Caltrain",
         "GUEST SERVICES OF",
         "HOPPER",
         "HOTEL PONTIAC",
+        "Hopper",
         "JRC SHINKANSEN",
         "JRC SMART EX TOKYO",
         "KLOOK",
@@ -282,11 +290,12 @@ categories = {
         "MEGADONQUIJOTE",
         "MOXY DWNTN LOS ANGEL",
         "RADICAL TOKYO",
+        "SBA RETAIL KIOSK",
         "SEVEN-ELEVEN",
         "TEAMLAB PLANETS",
         "THE HOXTON",
         "Travel",
-        "Hopper"
+        "UNION BUS GO TVM"
     ],
     "Subscriptions": [
         "DISNEYPLUS",
@@ -304,6 +313,8 @@ categories = {
         "AMAZON",
         "AMZN",
         "APPLE",
+        "BENTLEY CO LTD",
+        "CADETSYCANA",
         "GAMBIT",
         "HIVEMAPPER",
         "JEWELLERS",
@@ -312,7 +323,10 @@ categories = {
         "MY USADDRESS",
         "SIMPLYMODBOX",
         "SNAPLII",
+        "STORE",
+        "Store Ottawa",
         "TOTALDRIVE",
+        "UNITEDWAYCE",
         "ZEFITBLAD.COM"
     ],
     "Transportation": [
@@ -337,6 +351,7 @@ categories = {
         "HUNTER CHIROPRACTIC",
         "KITS",
         "LASIK MD",
+        "MEDICAL CENTRE",
         "PHYSIO",
         "TENTH LINE PHARMACY"
     ],
@@ -378,13 +393,20 @@ categories = {
         "QP",
         "QUICK PICK",
         "SP BENTLEY",
+        "STAPLESPRINT J ZGG RICHMOND HILL",
+        "STAPLESPRINT S WPG RICHMOND HILL",
+        "STAPLESPRINT.CA",
         "THE HOME DEPOT",
-        "WAL-MART"
+        "WAL-MART",
+        "WINNERSHOMESENSE"
     ],
     "Income": [
         "ACTING APPOINTMENT PAY",
         "Acting / Appointment Pay",
+        "BR",
         "Basic Pay",
+        "DN CPP RPC",
+        "DN HOOPP PEN PEN",
         "MAISON ACCUEIL SAGESSE",
         "PAYROLL DEPOSIT COUVENT MONT ST JOSEPH",
         "PAYROLL DEPOSIT SARSFIELD COLONIAL HOME",
@@ -431,10 +453,15 @@ categories = {
         "REFUNDED",
         "Returned Payment",
         "SENIORS DISCOUNT",
+        "Store Ottawa",
+        "TD PLACE TD PLACE",
         "WU"
     ],
     "Miscellaneous Charges": [
         "BRIDGE",
+        "CW TF",
+        "CW WATSWR",
+        "DS BRUYEREHOSPITAL BPY FAC",
         "Dishonoured Payment",
         "HOTEL PONTIAC",
         "IMPARK00110003U",
@@ -451,9 +478,12 @@ categories = {
         "PARKING",
         "PARKSMART",
         "PAYBYPHONE",
+        "PAYMENTUS SERVICE FEES RICHMOND HILL",
+        "PENALTIES PERMIT NEPEAN",
         "POLICE",
         "PREMIUM",
         "Place D'orlans",
+        "SC PLUS PLAN",
         "SERVICE CHARGE",
         "TOLL"
     ],
@@ -488,5 +518,14 @@ categories = {
     ],
     "DEPOSIT": [
         "DEPOSIT"
+    ],
+    "Mortgage": [
+        "DN B M PAYT PAY MTG HYP"
+    ],
+    "Phone": [
+        "CW VIDEOTRON LTEE"
+    ],
+    "Security System": [
+        "CW RELIANCE"
     ]
 }

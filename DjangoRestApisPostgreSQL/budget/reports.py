@@ -30,8 +30,17 @@ def load_data():
         log.error("Data file not found!")
         return None
 
+    df[MODEL_DESCRIPTION] = (
+    df[MODEL_DESCRIPTION]
+        .str.strip()
+        .str.upper()
+    )
+
     df[MODEL_DATE] = pd.to_datetime(df[MODEL_DATE])
     df = df[df[MODEL_DATE].dt.year == YEAR]
+
+
+    
     return df
 
 def get_unknown_categories(df):
@@ -64,7 +73,15 @@ class FinancialReport:
             .sum()
         )
 
- 
+        monthly_income_by_description = (
+            self.income
+                .groupby([
+                    self.income[MODEL_DATE].dt.month,
+                    MODEL_DESCRIPTION
+                ])[MODEL_AMOUNT]
+                .sum()
+        )
+
     
         monthly_expense = (
             self.expenses.groupby(self.df[MODEL_DATE].dt.month)[MODEL_AMOUNT].sum()
@@ -74,6 +91,16 @@ class FinancialReport:
                 MODEL_AMOUNT
             ].sum()
         )
+
+        monthly_expense_by_description = (
+            self.expenses
+            .groupby([
+                self.expenses[MODEL_DATE].dt.month,
+                MODEL_DESCRIPTION
+            ])[MODEL_AMOUNT]
+            .sum()
+        )
+
 
         # Largest/smallest spending months
         largest_spending_month = monthly_expense.idxmin()
@@ -89,14 +116,17 @@ class FinancialReport:
             "total_income": total_income,
             "total_expense": total_expense,
             "net_savings": net_savings,
-            "monthly_income_by_category": monthly_income_by_category, 
+            "monthly_income_by_category": monthly_income_by_category,
+            "monthly_income_by_description": monthly_income_by_description,
             "monthly_expense": monthly_expense,
             "monthly_expense_by_category": monthly_expense_by_category,
+            "monthly_expense_by_description": monthly_expense_by_description,  # 👈 NEW
             "largest_spending_month": calendar.month_name[largest_spending_month],
             "smallest_spending_month": calendar.month_name[smallest_spending_month],
             "biggest_splurge": biggest_splurge,
             "most_frequent_vendor": most_frequent_vendor,
         }
+
         return self.metrics
 
     def yearly_summary(self, file_name="yearly_summary.xlsx"):
@@ -143,7 +173,36 @@ class FinancialReport:
         log.info(f"✅ Monthly expense by category saved to {filepath}")
 
     
+    def save_monthly_expenses_by_description(
+    self, file_name="monthly_expense_by_description.xlsx"
+):
+        """Pivot monthly expenses by description and save to Excel."""
+        filepath = os.path.join(EXPORT_DIR, file_name)
 
+        pivot_df = (
+            self.metrics["monthly_expense_by_description"]
+                .unstack(fill_value=0)
+                .abs()
+                .T
+        )
+
+        pivot_df.to_excel(filepath)
+        log.info(f"✅ Monthly expense by description saved to {filepath}")
+
+    def save_monthly_income_by_description(
+        self, file_name="monthly_income_by_description.xlsx"
+    ):
+        filepath = os.path.join(EXPORT_DIR, file_name)
+
+        pivot_df = (
+            self.metrics["monthly_income_by_description"]
+                .unstack()
+                .fillna(0)
+                .T
+        )
+
+        pivot_df.to_excel(filepath)
+        log.info(f"✅ Monthly income by description saved to {filepath}")
 
     def print_wrapup(self):
         """Log a quick financial wrap-up (like Spotify Wrapped)."""

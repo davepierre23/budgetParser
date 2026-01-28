@@ -21,8 +21,7 @@ AMOUNT = " Transaction Amount"
 DESCRIPTION = "Description"
 
 IGNORES = [
-    # optional: uncomment if you want to exclude payments
-    # "PAYMENT RECEIVED - THANK YOU",
+
 ]
 
 def canParse(full_path: str) -> bool:
